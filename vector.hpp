@@ -12,7 +12,6 @@ using std::forward;
 using std::initializer_list;
 using std::move;
 using std::ostream;
-using std::vector;
 
 template <typename Vector>
 class VectorIterator {
@@ -144,14 +143,14 @@ class Vector {
   Vector(T fillerData) noexcept;
   Vector(int size) noexcept;
   Vector(int size, T fillerData) noexcept;
-  Vector(vector<T>) noexcept;
+  Vector(const std::vector<T>&) noexcept;
   Vector(initializer_list<T>) noexcept;
-  Vector(const Vector&) noexcept;
+  Vector(const Vector<T>&) noexcept;
   Vector(Vector&&) noexcept;
   ~Vector() noexcept;
 
   void Assign(const initializer_list<T>&);
-  void Assign(const vector<T>&);
+  void Assign(const std::vector<T>&);
   void Assign(int count, const T& value);
 
   void PushBack(const T&);
@@ -252,6 +251,79 @@ class Vector {
   Vector& operator=(const Vector<T>& otherVector);
   Vector& operator=(Vector<T>&&);
 };
+
+template <typename T>
+Vector<T>::Vector() noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(T fillerData) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(int size) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(int size, T fillerData) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(const std::vector<T>&) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(const initializer_list<T>) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(const Vector& otherList) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::Vector(Vector&& otherList) noexcept {
+  //
+}
+
+template <typename T>
+Vector<T>::~Vector() noexcept {
+  //
+}
+
+template <typename T>
+int Vector<T>::Size() const {
+  //
+}
+
+template <typename T>
+int Vector<T>::MaxSize() const {
+  //
+}
+
+template <typename T>
+int Vector<T>::Capacity() const {
+  //
+}
+
+template <typename T>
+void Vector<T>::Print() const {
+  cout << "[";
+  for (int i = 0; i < size; i++) {
+    cout << data[i];
+
+    if (i < (size - 1)) {
+      cout << ", ";
+    }
+  }
+  cout << "]" << endl;
+}
 
 template <typename T>
 ostream& operator<<(ostream& os, const Vector<T>& vector) {
