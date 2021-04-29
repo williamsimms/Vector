@@ -138,12 +138,17 @@ class Vector {
   int capacity;
   T* data;
 
+ private:
+  int GenerateNewCapacity() const;
+  void MergeSort(T* array, int low, int high);
+  void Merge(T* array, int low, int midpoint, int high);
+
  public:
   Vector() noexcept;
   Vector(int size) noexcept;
   Vector(int size, const T&) noexcept;
   Vector(const std::vector<T>&) noexcept;
-  Vector(initializer_list<T>) noexcept;
+  Vector(const initializer_list<T>&) noexcept;
   Vector(const Vector<T>&) noexcept;
   Vector(Vector&&) noexcept;
   ~Vector() noexcept;
@@ -179,28 +184,45 @@ class Vector {
 
   bool Empty() const;
 
-  void Reserve();
+  void Reserve(int sizeToReserve);
   void ShrinkToFit();
   void Clear();
+  void Resize(int desiredSize);
 
-  T Front() const;
-  T Back() const;
-  T Middle() const;
+  const T& Front() const;
+  const T& Back() const;
+  const T& Middle() const;
+
+  T& Front();
+  T& Back();
+  T& Middle();
 
   void Sort();
   void Reverse();
 
-  void At() const;
+  T& At();
+  const T& At() const;
 
   void Swap(const Vector&);
   void Swap(T*, T*);
 
-  void RemoveIf();
+  void RemoveIf(bool(*function(T)));
 
   void Print() const;
 
+  void Erase(int index);
+
+  void Insert(int index, const T& newData);
+  void InsertMiddle(const T& newData);
+
   T* Data();
   const T* Data() const;
+
+  void ForEach(T(*function(T)));
+  bool Every(bool(*function(T)));
+  bool Some(bool(*function(T)));
+
+  int GenerateRandomIndex() const;
 
   Iterator begin() {
     Iterator it(data);
@@ -278,7 +300,7 @@ Vector<T>::Vector(const std::vector<T>&) noexcept {
 }
 
 template <typename T>
-Vector<T>::Vector(initializer_list<T> initList) noexcept
+Vector<T>::Vector(const initializer_list<T>& initList) noexcept
     : size{initList.size()}, capacity{size}, data{new T[capacity]} {
   auto it = initList.begin();
 
@@ -305,7 +327,9 @@ Vector<T>::Vector(Vector&& otherList) noexcept
 
 template <typename T>
 Vector<T>::~Vector() noexcept {
-  delete[] data;
+  if (this->capacity > 0) {
+    delete[] data;
+  }
 }
 
 template <typename T>
@@ -324,6 +348,40 @@ int Vector<T>::Capacity() const {
 }
 
 template <typename T>
+void Vector<T>::PushBack(const T& newData) {
+  if (size == capacity) {
+    Resize();
+  }
+}
+
+template <typename T>
+void PushBack(T&& newData) {
+  //
+}
+
+template <typename T>
+void Vector<T>::Resize(int desiredSize) {
+  if (desiredSize > capacity) {
+    int newCapacity = this->GenerateNewCapacity();
+  }
+}
+
+template <typename T>
+int Vector<T>::GenerateNewCapacity() const {
+  int currentCapacity = this->capacity;
+  int newCapacity;
+
+  if (currentCapacity == 0) {
+    newCapacity = 1;
+  } else if (currentCapacity > 1000) {
+    newCapacity = currentCapacity + currentCapacity / 4;
+  } else {
+    newCapacity = currentCapacity * 2;
+  }
+  return newCapacity;
+}
+
+template <typename T>
 void Vector<T>::Print() const {
   cout << "[";
   for (int i = 0; i < size; i++) {
@@ -335,6 +393,55 @@ void Vector<T>::Print() const {
   }
 
   cout << "]" << endl;
+}
+
+template <typename T>
+void Vector<T>::Sort() {
+  this->MergeSort(data, 0, size - 1)
+}
+
+template <typename T>
+void Vector<T>::Reverse() {
+  //
+}
+
+template <typename T>
+void MergeSort(T* array, int low, int high) {
+  if (low < high) {
+    int midpoint = (low + high) / 2;
+    MergeSort(array, low, midpoint);
+    MergeSort(array, midpoint + 1, high);
+    MergeSort(array, low, midpoint, high);
+  }
+}
+
+template <typename T>
+void Vector<T>::Merge(T* array, int low, int midpoint, int high) {
+  T temporaryStore[size];
+  int i = low;
+  int j = midpoint + 1;
+  int k = 0;
+
+  while (i <= midpoint && j <= high) {
+    if (array[i] <= array[j]) {
+      temporaryStore[k++] = array[i++];
+    } else {
+      temporaryStore[k++] = array[j++];
+    }
+  }
+
+  while (i <= midpoint) {
+    temporaryStore[k++] = array[i++];
+  }
+
+  while (j <= high) {
+    temporaryStore[k++] = array[j++];
+  }
+  k--;
+  while (k >= 0) {
+    array[k + low] = temporaryStore[k];
+    k--;
+  }
 }
 
 template <typename T>
