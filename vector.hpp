@@ -140,9 +140,8 @@ class Vector {
 
  public:
   Vector() noexcept;
-  Vector(T fillerData) noexcept;
   Vector(int size) noexcept;
-  Vector(int size, T fillerData) noexcept;
+  Vector(int size, const T&) noexcept;
   Vector(const std::vector<T>&) noexcept;
   Vector(initializer_list<T>) noexcept;
   Vector(const Vector<T>&) noexcept;
@@ -165,9 +164,14 @@ class Vector {
   void PopFront();
   void PopBack();
 
-  void EmplaceBack();
-  void EmplaceFront();
-  void EmplaceAt();
+  template <typename... Args>
+  void EmplaceBack(Args&&... args);
+
+  template <typename... Args>
+  void EmplaceFront(Args&&... args);
+
+  template <typename... Args>
+  void EmplaceAt(Args&&... args);
 
   int Size() const;
   int MaxSize() const;
@@ -188,7 +192,8 @@ class Vector {
 
   void At() const;
 
-  void Swap();
+  void Swap(const Vector&);
+  void Swap(T*, T*);
 
   void RemoveIf();
 
@@ -253,23 +258,18 @@ class Vector {
 };
 
 template <typename T>
-Vector<T>::Vector() noexcept {
-  //
-}
+Vector<T>::Vector() noexcept : size{0}, capacity{0}, data{nullptr} {}
 
 template <typename T>
-Vector<T>::Vector(T fillerData) noexcept {
-  //
-}
+Vector<T>::Vector(int size) noexcept
+    : size{size}, capacity{size}, data{new T[capacity]} {}
 
 template <typename T>
-Vector<T>::Vector(int size) noexcept {
-  //
-}
-
-template <typename T>
-Vector<T>::Vector(int size, T fillerData) noexcept {
-  //
+Vector<T>::Vector(int size, const T& fillerData) noexcept
+    : size{size}, capacity{size}, data{new T[capacity]} {
+  for (int i = 0; i < size; i++) {
+    data[i] = fillerData;
+  }
 }
 
 template <typename T>
@@ -278,38 +278,49 @@ Vector<T>::Vector(const std::vector<T>&) noexcept {
 }
 
 template <typename T>
-Vector<T>::Vector(const initializer_list<T>) noexcept {
-  //
+Vector<T>::Vector(initializer_list<T> initList) noexcept
+    : size{initList.size()}, capacity{size}, data{new T[capacity]} {
+  auto it = initList.begin();
+
+  for (int i = 0; i < size; i++) {
+    data[i] = *it;
+    it++;
+  }
 }
 
 template <typename T>
-Vector<T>::Vector(const Vector& otherList) noexcept {
-  //
+Vector<T>::Vector(const Vector<T>& otherList) noexcept
+    : size{otherList.Size()}, capacity{size}, data{new T[capacity]} {
+  for (int i = 0; i < size; i++) {
+    data[i] = otherList.data[i];
+  }
 }
 
 template <typename T>
-Vector<T>::Vector(Vector&& otherList) noexcept {
-  //
+Vector<T>::Vector(Vector&& otherList) noexcept
+    : size{otherList.Size()}, capacity{size}, data{new T[capacity]} {
+  data = otherList.data;
+  otherList.data = nullptr;
 }
 
 template <typename T>
 Vector<T>::~Vector() noexcept {
-  //
+  delete[] data;
 }
 
 template <typename T>
 int Vector<T>::Size() const {
-  //
+  return this->size;
 }
 
 template <typename T>
 int Vector<T>::MaxSize() const {
-  //
+  return this->capacity;
 }
 
 template <typename T>
 int Vector<T>::Capacity() const {
-  //
+  return this->capacity;
 }
 
 template <typename T>
@@ -322,6 +333,7 @@ void Vector<T>::Print() const {
       cout << ", ";
     }
   }
+
   cout << "]" << endl;
 }
 
