@@ -222,7 +222,11 @@ class Vector {
   bool Every(bool(*function(T)));
   bool Some(bool(*function(T)));
 
-  int GenerateRandomIndex() const;
+  [[nodiscard]] int GenerateRandomIndex() const;
+
+  [[nodiscard]] int Midpoint() const;
+
+  void Shuffle();
 
   Iterator begin() {
     Iterator it(data);
@@ -360,9 +364,33 @@ void PushBack(T&& newData) {
 }
 
 template <typename T>
-void Vector<T>::Resize(int desiredSize) {
-  if (desiredSize > capacity) {
-    int newCapacity = this->GenerateNewCapacity();
+void Vector<T>::Resize(int desiredCapacity) {
+  if (desiredCapacity == capacity) {
+    return;
+  }
+
+  if (desiredCapacity > capacity) {
+    T newData = new T[desiredCapacity];
+
+    for (int i = 0; i < size; i++) {
+      newData[i] = move(data[i]);
+    }
+
+    delete[] data;
+    data = newData;
+    this->capacity = desiredCapacity;
+  }
+
+  if (desiredCapacity < capacity) {
+    T newData = new T[desiredCapacity];
+
+    for (int i = 0; i < desiredCapacity; i++) {
+      newData[i] = move(data[i]);
+    }
+
+    delete[] data;
+    data = newData;
+    this->size = desiredCapacity;
   }
 }
 
@@ -382,27 +410,23 @@ int Vector<T>::GenerateNewCapacity() const {
 }
 
 template <typename T>
-void Vector<T>::Print() const {
-  cout << "[";
-  for (int i = 0; i < size; i++) {
-    cout << data[i];
-
-    if (i < (size - 1)) {
-      cout << ", ";
-    }
-  }
-
-  cout << "]" << endl;
+[[nodiscard]] int Vector<T>::GenerateRandomIndex() const {
+  srand((unsigned int)(time(nullptr)));
+  int currentLengthOfIndices = size - 1;
+  int randomIndex = rand() % currentLengthOfIndices;
+  return randomIndex;
 }
 
 template <typename T>
 void Vector<T>::Sort() {
-  this->MergeSort(data, 0, size - 1)
+  this->MergeSort(data, 0, size - 1);
 }
 
 template <typename T>
 void Vector<T>::Reverse() {
-  //
+  for (int i = 0; i < size / 2; i++) {
+    Swap(&data[i], &data[size - i - 1]);
+  }
 }
 
 template <typename T>
@@ -442,6 +466,38 @@ void Vector<T>::Merge(T* array, int low, int midpoint, int high) {
     array[k + low] = temporaryStore[k];
     k--;
   }
+}
+
+template <typename T>
+int Vector<T>::Midpoint() const {
+  int currentLength = size;
+  int midpoint = (int)floor(currentLength / 2);
+  return midpoint;
+}
+
+template <typename T>
+void Vector<T>::Shuffle() {
+  int currentIndex = size;
+
+  while (0 != currentIndex) {
+    int randomIndex = GenerateRandomIndex();
+    currentIndex--;
+    Swap(&data[randomIndex], &data[currentIndex]);
+  }
+}
+
+template <typename T>
+void Vector<T>::Print() const {
+  cout << "[";
+  for (int i = 0; i < size; i++) {
+    cout << data[i];
+
+    if (i < (size - 1)) {
+      cout << ", ";
+    }
+  }
+
+  cout << "]" << endl;
 }
 
 template <typename T>
