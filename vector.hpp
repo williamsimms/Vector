@@ -1,3 +1,4 @@
+#include <cassert>
 #include <ctime>
 #include <initializer_list>
 #include <iostream>
@@ -200,8 +201,8 @@ class Vector {
   void Sort();
   void Reverse();
 
-  T& At();
-  const T& At() const;
+  T& At(int index);
+  const T& At(int index) const;
 
   void Swap(const Vector&);
   void Swap(T*, T*);
@@ -352,6 +353,38 @@ int Vector<T>::Capacity() const {
 }
 
 template <typename T>
+T& Vector<T>::Front() {
+  return data[0];
+}
+
+template <typename T>
+T& Vector<T>::Back() {
+  return data[size - 1];
+}
+
+template <typename T>
+T& Vector<T>::Middle() {
+  int midpoint = this->Midpoint();
+  return data[midpoint];
+}
+
+template <typename T>
+const T& Vector<T>::Front() const {
+  return data[0];
+}
+
+template <typename T>
+const T& Vector<T>::Back() const {
+  return data[size - 1];
+}
+
+template <typename T>
+const T& Vector<T>::Middle() const {
+  int midpoint = this->Midpoint();
+  return data[midpoint];
+}
+
+template <typename T>
 void Vector<T>::PushBack(const T& newData) {
   if (size == capacity) {
     Resize();
@@ -361,6 +394,20 @@ void Vector<T>::PushBack(const T& newData) {
 template <typename T>
 void PushBack(T&& newData) {
   //
+}
+
+template <typename T>
+T& Vector<T>::At(int index) {
+  assert(index >= 0);
+  assert(index < size);
+  return data[index];
+}
+
+template <typename T>
+const T& Vector<T>::At(int index) const {
+  assert(index >= 0);
+  assert(index < size);
+  return data[index];
 }
 
 template <typename T>
