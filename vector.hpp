@@ -210,22 +210,24 @@ class Vector {
   T& At(int index);
   const T& At(int index) const;
 
-  void Swap(const Vector&);
+  void Swap(const Vector<T>&);
   void Swap(T*, T*);
 
-  void RemoveIf(bool(*function(T)));
+  int RemoveIf(bool(*function(T)));
 
   void Print() const;
 
   T* Data();
   const T* Data() const;
 
-  void ForEach(T(*function(T)));
-  bool Every(bool(*function(T)));
-  bool Some(bool(*function(T)));
+  void ForEach(T(*function(T, int)));
+  bool Every(bool(*function(T, int)));
+  bool Some(bool(*function(T, int)));
+
+  int IndexOf(const T&);
+  int LastIndexOf(const T&);
 
   [[nodiscard]] int GenerateRandomIndex() const;
-
   [[nodiscard]] int Midpoint() const;
 
   void Shuffle();
@@ -301,8 +303,11 @@ Vector<T>::Vector(int size, const T& fillerData) noexcept
 }
 
 template <typename T>
-Vector<T>::Vector(const std::vector<T>&) noexcept {
-  //
+Vector<T>::Vector(const std::vector<T>& fillerVector) noexcept
+    : size{fillerVector.size()}, capacity{size}, data{new T[capacity]} {
+  for (int i = 0; i < size; i++) {
+    data[i] = move(fillerVector[i]);
+  }
 }
 
 template <typename T>
@@ -580,18 +585,34 @@ void Vector<T>::Emplace(int index, Args&&... args) {
 template <typename T>
 void Vector<T>::PopFront() {
   for (int i = 0; i < size; i++) {
-    //
+    data[i] = data[i + 1];
   }
+
+  this->size--;
 }
 
 template <typename T>
 void Vector<T>::PopBack() {
-  //
+  this->size--;
 }
 
 template <typename T>
 void Vector<T>::PopMiddle() {
-  //
+  int midpoint = Midpoint();
+  for (int i = midpoint; i < size; i++) {
+    data[i] = data[i + 1];
+  }
+
+  this->size--;
+}
+
+template <typename T>
+void Vector<T>::Erase(int index) {
+  for (int i = index; i < size; i++) {
+    data[i] = data[i + 1];
+  }
+
+  this->size--;
 }
 
 template <typename T>
@@ -744,6 +765,100 @@ void Vector<T>::Shuffle() {
     currentIndex--;
     Swap(&data[randomIndex], &data[currentIndex]);
   }
+}
+
+template <typename T>
+void Vector<T>::Swap(const Vector<T>& otherList) {
+  if (otherList.Size() == this->size) {
+    //
+  }
+
+  if (otherList.Size() > this->size) {
+    //
+  }
+
+  if (this->size > otherList.Size()) {
+    //
+  }
+}
+
+template <typename T>
+int Vector<T>::RemoveIf(bool(*function(T))) {
+  //
+}
+
+template <typename T>
+void Vector<T>::ForEach(T(*function(T, int))) {
+  int index = 0;
+  for (int i = 0; i < size; i++) {
+    data[i] = function(data[i], index);
+    index++;
+  }
+}
+
+template <typename T>
+bool Vector<T>::Every(bool(*function(T, int))) {
+  int index = 0;
+  for (int i = 0; i < size; i++) {
+    bool every = function(data[i], index);
+
+    if (!every) {
+      return false;
+    }
+
+    index++;
+  }
+
+  return true;
+}
+
+template <typename T>
+bool Vector<T>::Some(bool(*function(T, int))) {
+  int index = 0;
+  for (int i = 0; i < size; i++) {
+    bool some = function(data[i], index);
+
+    if (some) {
+      return true;
+    }
+
+    index++;
+  }
+
+  return false;
+}
+
+template <typename T>
+int Vector<T>::IndexOf(const T& dataToFind) {
+  int counter = 0;
+  int index = -1;
+
+  for (int i = 0; i < size; i++) {
+    if (data[i] == dataToFind) {
+      index = counter;
+      break;
+    }
+
+    counter++;
+  }
+
+  return index;
+}
+
+template <typename T>
+int Vector<T>::LastIndexOf(const T& dataToFind) {
+  int counter = 0;
+  int index = -1;
+
+  for (int i = 0; i < size; i++) {
+    if (data[i] == dataToFind) {
+      index = counter;
+    }
+
+    counter++;
+  }
+
+  return index;
 }
 
 template <typename T>
