@@ -385,15 +385,89 @@ const T& Vector<T>::Middle() const {
 }
 
 template <typename T>
-void Vector<T>::PushBack(const T& newData) {
-  if (size == capacity) {
-    Resize();
+void Vector<T>::Assign(const initializer_list<T>& initList) {
+  for (const T& element : initList) {
+    PushBack(move(element));
   }
 }
 
 template <typename T>
-void PushBack(T&& newData) {
-  //
+void Vector<T>::Assign(const std::vector<T>& list) {
+  for (const T& element : list) {
+    PushBack(move(element));
+  }
+}
+
+template <typename T>
+void Vector<T>::Assign(int count, const T& value) {
+  int counter = 0;
+  while (counter < count) {
+    PushBack(value);
+    counter++;
+  }
+}
+
+template <typename T>
+void Vector<T>::PushBack(const T& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  this->data[size] = newData;
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::PushBack(T&& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  this->data[size] = move(newData);
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::PushFront(const T& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  for (int i = 0; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[0] = newData;
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::PushFront(T&& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  for (int i = 0; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[0] = move(newData);
+  this->size++;
+}
+
+template <typename T>
+template <typename... Args>
+void Vector<T>::EmplaceBack(Args&&... args) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  this->data[size] = T(forward<Args>(args)...);
 }
 
 template <typename T>
@@ -439,6 +513,21 @@ void Vector<T>::Resize(int desiredCapacity) {
     data = newData;
     this->size = desiredCapacity;
   }
+}
+
+template <typename T>
+void Vector<T>::Clear() {
+  this->size = 0;
+  this->Resize(0);
+}
+
+template <typename T>
+void Vector<T>::ShrinkToFit() {
+  if (size == capacity) {
+    return;
+  }
+
+  this->Resize(this->size);
 }
 
 template <typename T>
