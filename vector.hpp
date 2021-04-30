@@ -226,6 +226,8 @@ class Vector {
 
   int IndexOf(const T&);
   int LastIndexOf(const T&);
+  T& Find(const T&);
+  const T& Find(const T&) const;
 
   [[nodiscard]] int GenerateRandomIndex() const;
   [[nodiscard]] int Midpoint() const;
@@ -283,8 +285,8 @@ class Vector {
   const T& operator[](int index) const;
   T& operator[](int index);
 
-  Vector& operator=(const Vector<T>& otherVector);
-  Vector& operator=(Vector<T>&&);
+  Vector<T>& operator=(const Vector<T>& otherVector);
+  Vector<T>& operator=(Vector<T>&&);
 };
 
 template <typename T>
@@ -341,6 +343,73 @@ Vector<T>::~Vector() noexcept {
   if (this->capacity > 0) {
     delete[] data;
   }
+}
+
+template <typename T>
+const T& Vector<T>::operator[](int index) const {
+  assert(index >= 0);
+  assert(index < size);
+  return data[index];
+}
+
+template <typename T>
+T& Vector<T>::operator[](int index) {
+  assert(index >= 0);
+  assert(index < size);
+  return data[index];
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator=(const Vector<T>& otherVector) {
+  if (this == &otherVector) {
+    return;
+  }
+
+  return *this;
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator=(Vector<T>&& otherVector) {
+  if (this == &otherVector) {
+    return;
+  }
+
+  return *this;
+}
+
+template <typename T>
+bool Vector<T>::operator==(const Vector<T>& otherVector) {
+  if (this->size != otherVector.Size()) {
+    return false;
+  }
+
+  for (int i = 0; i < size; i++) {
+    if (data[i] != otherVector[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+template <typename T>
+bool Vector<T>::operator!=(const Vector<T>& otherVector) {
+  return !(*this == otherVector);
+}
+
+template <typename T>
+bool Vector<T>::operator<(const Vector<T>& otherVector) {
+  return this->size < otherVector.Size();
+}
+
+template <typename T>
+bool Vector<T>::operator>(const Vector<T>& otherVector) {
+  return this->size > otherVector.Size();
+}
+
+template <typename T>
+auto Vector<T>::operator<=>(const Vector<T> otherVector) const {
+  //
 }
 
 template <typename T>
@@ -784,7 +853,13 @@ void Vector<T>::Swap(const Vector<T>& otherList) {
 
 template <typename T>
 int Vector<T>::RemoveIf(bool(*function(T))) {
-  //
+  for (int i = 0; i < size; i++) {
+    bool shouldRemove = function(data[i]);
+
+    if (shouldRemove) {
+      //
+    }
+  }
 }
 
 template <typename T>
@@ -824,7 +899,6 @@ bool Vector<T>::Some(bool(*function(T, int))) {
 
     index++;
   }
-
   return false;
 }
 
@@ -859,6 +933,24 @@ int Vector<T>::LastIndexOf(const T& dataToFind) {
   }
 
   return index;
+}
+
+template <typename T>
+T& Vector<T>::Find(const T& dataToFind) {
+  for (int i = 0; i < size; i++) {
+    if (data[i] == dataToFind) {
+      return data[i];
+    }
+  }
+}
+
+template <typename T>
+const T& Vector<T>::Find(const T& dataToFind) const {
+  for (int i = 0; i < size; i++) {
+    if (data[i] == dataToFind) {
+      return data[i];
+    }
+  }
 }
 
 template <typename T>
