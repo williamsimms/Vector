@@ -164,11 +164,17 @@ class Vector {
   void PushFront(const T&);
   void PushFront(T&&);
 
-  void PushAt(int index, const T&);
-  void PushAt(int index, T&&);
+  void PushMiddle(const T&);
+  void PushMiddle(T&&);
+
+  void Insert(int index, const T& newData);
+  void Insert(int index, T&& newData);
 
   void PopFront();
   void PopBack();
+  void PopMiddle();
+
+  void Erase(int index);
 
   template <typename... Args>
   void EmplaceBack(Args&&... args);
@@ -177,7 +183,7 @@ class Vector {
   void EmplaceFront(Args&&... args);
 
   template <typename... Args>
-  void EmplaceAt(Args&&... args);
+  void Emplace(int index, Args&&... args);
 
   int Size() const;
   int MaxSize() const;
@@ -210,11 +216,6 @@ class Vector {
   void RemoveIf(bool(*function(T)));
 
   void Print() const;
-
-  void Erase(int index);
-
-  void Insert(int index, const T& newData);
-  void InsertMiddle(const T& newData);
 
   T* Data();
   const T* Data() const;
@@ -353,6 +354,15 @@ int Vector<T>::Capacity() const {
 }
 
 template <typename T>
+bool Vector<T>::Empty() const {
+  if (size == 0) {
+    return true;
+  }
+
+  return false;
+}
+
+template <typename T>
 T& Vector<T>::Front() {
   return data[0];
 }
@@ -460,6 +470,70 @@ void Vector<T>::PushFront(T&& newData) {
 }
 
 template <typename T>
+void Vector<T>::Insert(int index, const T& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  for (int i = index; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[index] = newData;
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::Insert(int index, T&& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  for (int i = index; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[index] = move(newData);
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::PushMiddle(const T& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  int midpoint = Midpoint();
+
+  for (int i = midpoint; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[midpoint] = newData;
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::PushMiddle(T&& newData) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  int midpoint = Midpoint();
+
+  for (int i = midpoint; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[midpoint] = move(newData);
+  this->size++;
+}
+
+template <typename T>
 template <typename... Args>
 void Vector<T>::EmplaceBack(Args&&... args) {
   if (size == capacity) {
@@ -468,6 +542,56 @@ void Vector<T>::EmplaceBack(Args&&... args) {
   }
 
   this->data[size] = T(forward<Args>(args)...);
+  this->size++;
+}
+
+template <typename T>
+template <typename... Args>
+void Vector<T>::EmplaceFront(Args&&... args) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  for (int i = 0; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  this->data[0] = T(forward<Args>(args)...);
+  this->size++;
+}
+
+template <typename T>
+template <typename... Args>
+void Vector<T>::Emplace(int index, Args&&... args) {
+  if (size == capacity) {
+    int newCapacity = GenerateNewCapacity();
+    Resize(newCapacity);
+  }
+
+  for (int i = index; i < size; i++) {
+    data[i + 1] = data[i];
+  }
+
+  data[index] = T(forward<Args>(args)...);
+  this->size++;
+}
+
+template <typename T>
+void Vector<T>::PopFront() {
+  for (int i = 0; i < size; i++) {
+    //
+  }
+}
+
+template <typename T>
+void Vector<T>::PopBack() {
+  //
+}
+
+template <typename T>
+void Vector<T>::PopMiddle() {
+  //
 }
 
 template <typename T>
