@@ -9,7 +9,7 @@ int main() {
   Vector<int> vector{1, 2, 3, 4};
 
   int x = 12;
-  vector.PushMiddle(x);
+  vector.Insert(3, x);
 
   cout << vector;
 

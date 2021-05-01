@@ -569,7 +569,10 @@ void Vector<T>::Insert(int index, const T& newData) {
     Resize(newCapacity);
   }
 
-  for (int i = index; i < size; i++) {
+  assert(index >= 0);
+  assert(index < size);
+
+  for (int i = size; i >= index; i--) {
     data[i + 1] = data[i];
   }
 
@@ -584,7 +587,10 @@ void Vector<T>::Insert(int index, T&& newData) {
     Resize(newCapacity);
   }
 
-  for (int i = index; i < size; i++) {
+  assert(index >= 0);
+  assert(index < size);
+
+  for (int i = size; i >= index; i--) {
     data[i + 1] = data[i];
   }
 
@@ -599,7 +605,7 @@ void Vector<T>::PushMiddle(const T& newData) {
     Resize(newCapacity);
   }
 
-  int midpoint = Midpoint();
+  int midpoint = Midpoint(size + 1);
 
   for (int i = size; i >= midpoint; i--) {
     data[i + 1] = data[i];
@@ -616,7 +622,7 @@ void Vector<T>::PushMiddle(T&& newData) {
     Resize(newCapacity);
   }
 
-  int midpoint = Midpoint();
+  int midpoint = Midpoint(size + 1);
 
   for (int i = size; i >= midpoint; i--) {
     data[i + 1] = data[i];
@@ -661,7 +667,10 @@ void Vector<T>::Emplace(int index, Args&&... args) {
     Resize(newCapacity);
   }
 
-  for (int i = index; i < size; i++) {
+  assert(index >= 0);
+  assert(index < size);
+
+  for (int i = size; i >= index; i--) {
     data[i + 1] = data[i];
   }
 

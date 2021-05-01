@@ -333,3 +333,89 @@ TEST_CASE("Appends a new element to the middle of the Vector.",
     REQUIRE(vector.Capacity() == 6);
   }
 }
+
+TEST_CASE("Inserta a new element at the desired index.", ";Insert]") {
+  SECTION("Inserts new element at the first position of the vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Insert(0, 12);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 8);
+    REQUIRE(vector[0] == 12);
+    REQUIRE(vector[1] == 1);
+    REQUIRE(vector[2] == 2);
+    REQUIRE(vector[3] == 3);
+    REQUIRE(vector[4] == 4);
+  }
+
+  SECTION("Inserts new element at the last index of the vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Insert(3, 12);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 8);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 12);
+    REQUIRE(vector[4] == 4);
+  }
+
+  SECTION("Inserts new element at the middle position of the vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Insert(1, 12);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 8);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 12);
+    REQUIRE(vector[2] == 2);
+    REQUIRE(vector[3] == 3);
+    REQUIRE(vector[4] == 4);
+  }
+
+  SECTION("Inserts new element at an arbritrary index of the vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Insert(2, 12);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 8);
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 12);
+    REQUIRE(vector[3] == 3);
+    REQUIRE(vector[4] == 4);
+  }
+}
