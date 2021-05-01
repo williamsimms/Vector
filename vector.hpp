@@ -140,7 +140,6 @@ class Vector {
   T* data;
 
  private:
-  int GenerateNewCapacity() const;
   void MergeSort(T* array, int low, int high);
   void Merge(T* array, int low, int midpoint, int high);
 
@@ -186,6 +185,7 @@ class Vector {
   void Reserve(int sizeToReserve);
   void Resize(int desiredSize);
   void ShrinkToFit();
+  int GenerateNewCapacity() const;
   void Clear();
   const T& Front() const;
   const T& Back() const;
@@ -325,6 +325,7 @@ template <typename T>
 Vector<T>::~Vector() noexcept {
   if (this->capacity > 0) {
     delete[] data;
+    data = nullptr;
   }
 }
 
@@ -485,6 +486,16 @@ template <typename T>
 const T& Vector<T>::Middle() const {
   int midpoint = this->Midpoint();
   return data[midpoint];
+}
+
+template <typename T>
+T* Vector<T>::Data() {
+  return data;
+}
+
+template <typename T>
+const T* Vector<T>::Data() const {
+  return data;
 }
 
 template <typename T>
@@ -767,6 +778,7 @@ void Vector<T>::Resize(int desiredCapacity) {
     delete[] data;
     data = newData;
     this->size = desiredCapacity;
+    this->capacity = desiredCapacity;
   }
 }
 
@@ -779,6 +791,7 @@ void Vector<T>::Clear() {
   this->size = 0;
   this->Resize(0);
   delete[] data;
+  data = nullptr;
 }
 
 template <typename T>
@@ -806,7 +819,7 @@ int Vector<T>::GenerateNewCapacity() const {
 
   if (currentCapacity == 0) {
     newCapacity = 1;
-  } else if (currentCapacity > 1000) {
+  } else if (currentCapacity >= 1000) {
     newCapacity = currentCapacity + currentCapacity / 4;
   } else {
     newCapacity = currentCapacity * 2;

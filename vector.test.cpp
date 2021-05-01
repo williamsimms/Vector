@@ -624,19 +624,30 @@ TEST_CASE(
     "resize.",
     "[Generate New Capacity]") {
   SECTION("If the current capacity is zero, the new capacity is one.") {
-    //
+    Vector<char> vector;
+    int newCapacity = vector.GenerateNewCapacity();
+    REQUIRE(vector.Capacity() == 0);
+    REQUIRE(newCapacity == 1);
   }
 
   SECTION(
       "If the current capacity is greater than 1000, the new capacity is the "
       "old capacity plus one quarter of the old capacity.") {
-    //
+    Vector<char> vector;
+    vector.Reserve(1000);
+    int newCapacity = vector.GenerateNewCapacity();
+    REQUIRE(vector.Capacity() == 1000);
+    REQUIRE(newCapacity == 1250);
   }
 
   SECTION(
       "If the capacity is greater than zero and less than one thousand, the "
       "capacity is doubled.") {
-    //
+    Vector<char> vector;
+    vector.Reserve(10);
+    int newCapacity = vector.GenerateNewCapacity();
+    REQUIRE(vector.Capacity() == 10);
+    REQUIRE(newCapacity == 20);
   }
 }
 
@@ -645,7 +656,23 @@ TEST_CASE("Resizes the vector to the provided capacity.", "[Resize]") {
       "If the desired capacity is greater than the current capacity, allocates "
       "new memory of the desired size, and copies over elements from previous "
       "vector.") {
-    //
+    Vector<int> vector{1, 2, 3};
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 3);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+
+    vector.Resize(10);
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 10);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
   }
 
   SECTION(
@@ -653,13 +680,51 @@ TEST_CASE("Resizes the vector to the provided capacity.", "[Resize]") {
       "new memory of the desired size, and copies over elements from previous "
       "vector, potentially cropping elements which were once present in the "
       "list.") {
-    //
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
+
+    vector.Resize(3);
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 3);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
   }
 
   SECTION(
       "Doesnt Change the capacity if the desired capacity is the same as the "
       "current capacity.") {
-    //
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
+
+    vector.Resize(5);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
   }
 }
 
@@ -667,14 +732,30 @@ TEST_CASE("Reserves memory for the Vector.", "[Reserve]") {
   SECTION(
       "If the procided amount to reserve is less than or equal to the current "
       "capacity, no memory is allocated.") {
-    //
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    vector.Reserve(5);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
   }
 
   SECTION(
       "If the provided amount to reserve is greater than the current capacity, "
       "the desired amount of memory is allocated, and the elements are "
       "copied.") {
-    //
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    vector.Reserve(10);
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 10);
   }
 }
 
@@ -682,11 +763,60 @@ TEST_CASE(
     "Sets the size and capacity of the vector to 0, and deallocates the "
     "allocated memory of the vector.",
     "[Clear]") {
-  //
+  Vector<int> vector{1, 2, 3, 4, 5};
+
+  REQUIRE(vector.Size() == 5);
+  REQUIRE(vector.Capacity() == 5);
+
+  vector.Clear();
+
+  REQUIRE(vector.Size() == 0);
+  REQUIRE(vector.Capacity() == 0);
+  REQUIRE(vector.Data() == nullptr);
 }
 
 TEST_CASE(
     "Shrinks the capacity of the vector to the current size of the vector.",
     "[Shrink to Fit]") {
-  //
+  SECTION("Does nothing if the current capacity and size are equal.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    vector.ShrinkToFit();
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+  }
+
+  SECTION(
+      "If the capacity is greater than the current length, resizes the vector "
+      "to the amount of elements in the vector, effectively shrinking the "
+      "vector. The capacity and size of the vector will now be equal.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 5);
+
+    vector.PushBack(6);
+
+    REQUIRE(vector.Size() == 6);
+    REQUIRE(vector.Capacity() == 10);
+
+    vector.ShrinkToFit();
+
+    REQUIRE(vector.Size() == 6);
+    REQUIRE(vector.Capacity() == 6);
+
+    vector.Reserve(10);
+
+    REQUIRE(vector.Size() == 6);
+    REQUIRE(vector.Capacity() == 10);
+
+    vector.ShrinkToFit();
+
+    REQUIRE(vector.Size() == 6);
+    REQUIRE(vector.Capacity() == 6);
+  }
 }
