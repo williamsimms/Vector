@@ -618,3 +618,75 @@ TEST_CASE("Returns the element at the desired index.", "[At]") {
     REQUIRE(vector.At(3) == 4);
   }
 }
+
+TEST_CASE(
+    "Generates the next capacity the vector will resize to, when it needs to "
+    "resize.",
+    "[Generate New Capacity]") {
+  SECTION("If the current capacity is zero, the new capacity is one.") {
+    //
+  }
+
+  SECTION(
+      "If the current capacity is greater than 1000, the new capacity is the "
+      "old capacity plus one quarter of the old capacity.") {
+    //
+  }
+
+  SECTION(
+      "If the capacity is greater than zero and less than one thousand, the "
+      "capacity is doubled.") {
+    //
+  }
+}
+
+TEST_CASE("Resizes the vector to the provided capacity.", "[Resize]") {
+  SECTION(
+      "If the desired capacity is greater than the current capacity, allocates "
+      "new memory of the desired size, and copies over elements from previous "
+      "vector.") {
+    //
+  }
+
+  SECTION(
+      "If the desired capacity is lesser than the current capacity, allocates "
+      "new memory of the desired size, and copies over elements from previous "
+      "vector, potentially cropping elements which were once present in the "
+      "list.") {
+    //
+  }
+
+  SECTION(
+      "Doesnt Change the capacity if the desired capacity is the same as the "
+      "current capacity.") {
+    //
+  }
+}
+
+TEST_CASE("Reserves memory for the Vector.", "[Reserve]") {
+  SECTION(
+      "If the procided amount to reserve is less than or equal to the current "
+      "capacity, no memory is allocated.") {
+    //
+  }
+
+  SECTION(
+      "If the provided amount to reserve is greater than the current capacity, "
+      "the desired amount of memory is allocated, and the elements are "
+      "copied.") {
+    //
+  }
+}
+
+TEST_CASE(
+    "Sets the size and capacity of the vector to 0, and deallocates the "
+    "allocated memory of the vector.",
+    "[Clear]") {
+  //
+}
+
+TEST_CASE(
+    "Shrinks the capacity of the vector to the current size of the vector.",
+    "[Shrink to Fit]") {
+  //
+}

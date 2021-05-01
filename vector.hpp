@@ -184,9 +184,9 @@ class Vector {
   int Capacity() const;
   bool Empty() const;
   void Reserve(int sizeToReserve);
+  void Resize(int desiredSize);
   void ShrinkToFit();
   void Clear();
-  void Resize(int desiredSize);
   const T& Front() const;
   const T& Back() const;
   const T& Middle() const;
@@ -772,8 +772,13 @@ void Vector<T>::Resize(int desiredCapacity) {
 
 template <typename T>
 void Vector<T>::Clear() {
+  if (this->capacity == 0) {
+    return;
+  }
+
   this->size = 0;
   this->Resize(0);
+  delete[] data;
 }
 
 template <typename T>
@@ -783,6 +788,15 @@ void Vector<T>::ShrinkToFit() {
   }
 
   this->Resize(this->size);
+}
+
+template <typename T>
+void Vector<T>::Reserve(int amountToReserve) {
+  if (amountToReserve <= capacity) {
+    return;
+  }
+
+  this->Resize(amountToReserve);
 }
 
 template <typename T>
