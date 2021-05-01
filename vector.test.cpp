@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "Vector3.hpp"
 #include "vendor/catch.hpp"
 
 TEST_CASE("Assigns Elements to the Vector.", "[Assign]") {
@@ -820,3 +821,121 @@ TEST_CASE(
     REQUIRE(vector.Capacity() == 6);
   }
 }
+
+TEST_CASE("Emplaces the new element at the back of the Vector.",
+          "[Emplace Back]") {
+  Vector<Vector2> vector;
+
+  REQUIRE(vector.Size() == 0);
+  REQUIRE(vector.Capacity() == 0);
+
+  Vector2 vector2One(2, 3);
+
+  vector.EmplaceBack(2, 3);
+
+  REQUIRE(vector.Size() == 1);
+  REQUIRE(vector.Capacity() == 1);
+
+  REQUIRE(vector.Back() == vector2One);
+
+  Vector2 vector2Two(1, 2);
+
+  vector.EmplaceBack(1, 2);
+  REQUIRE(vector.Size() == 2);
+  REQUIRE(vector.Capacity() == 2);
+
+  REQUIRE(vector.Back() == vector2Two);
+}
+
+TEST_CASE("Emplaces the new element at the beginning of the Vector.",
+          "[Emplace Front]") {
+  Vector<Vector2> vector;
+
+  REQUIRE(vector.Size() == 0);
+  REQUIRE(vector.Capacity() == 0);
+
+  Vector2 vector2One(2, 3);
+
+  vector.EmplaceFront(2, 3);
+
+  REQUIRE(vector.Size() == 1);
+  REQUIRE(vector.Capacity() == 1);
+
+  REQUIRE(vector.Front() == vector2One);
+
+  Vector2 vector2Two(1, 2);
+
+  vector.EmplaceFront(1, 2);
+  REQUIRE(vector.Size() == 2);
+  REQUIRE(vector.Capacity() == 2);
+
+  REQUIRE(vector.Front() == vector2Two);
+}
+
+TEST_CASE("Emplaces the new element at the specified index of the Vector.",
+          "[Emplace Middle]") {
+  Vector<Vector2> vector;
+
+  REQUIRE(vector.Size() == 0);
+  REQUIRE(vector.Capacity() == 0);
+
+  Vector2 vector2One(2, 3);
+
+  vector.EmplaceBack(2, 3);
+
+  REQUIRE(vector.Size() == 1);
+  REQUIRE(vector.Capacity() == 1);
+
+  REQUIRE(vector.Back() == vector2One);
+
+  Vector2 vector2Two(1, 2);
+
+  vector.EmplaceBack(1, 2);
+  REQUIRE(vector.Size() == 2);
+  REQUIRE(vector.Capacity() == 2);
+
+  REQUIRE(vector.Back() == vector2Two);
+
+  Vector2 vector3Three(2, 6);
+  vector.Emplace(0, 2, 6);
+  REQUIRE(vector.Size() == 3);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector.Front() == vector3Three);
+}
+
+TEST_CASE(
+    "Returns the index of the first occurence of the provided data in the "
+    "Vector. Otherwise returns -1.",
+    "[Index Of]") {
+  Vector<int> vector{1, 2, 3, 4, 5, 5, 2, 1};
+
+  REQUIRE(vector.IndexOf(1) == 0);
+  REQUIRE(vector.IndexOf(2) == 1);
+  REQUIRE(vector.IndexOf(3) == 2);
+  REQUIRE(vector.IndexOf(4) == 3);
+  REQUIRE(vector.IndexOf(5) == 4);
+  REQUIRE(vector.IndexOf(12) == -1);
+}
+
+TEST_CASE(
+    "Returns the index of the last occurence of the provided data in the "
+    "Vector. Otherwise returns -1.",
+    "[Last Index Of]") {
+  Vector<int> vector{1, 2, 3, 4, 5, 5, 2, 1};
+
+  REQUIRE(vector.LastIndexOf(1) == 7);
+  REQUIRE(vector.LastIndexOf(2) == 6);
+  REQUIRE(vector.LastIndexOf(3) == 2);
+  REQUIRE(vector.LastIndexOf(4) == 3);
+  REQUIRE(vector.LastIndexOf(5) == 5);
+  REQUIRE(vector.LastIndexOf(12) == -1);
+}
+
+// TEST_CASE(
+//     "Returns a reference to the first occurrence of the element with matching
+//     " "data.",
+//     "[Find]") {
+//   Vector<int> vector{1, 2, 3, 4, 5};
+//   vector.Find(2);
+// }

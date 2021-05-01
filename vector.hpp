@@ -210,6 +210,8 @@ class Vector {
   int LastIndexOf(const T&);
   T& Find(const T&);
   const T& Find(const T&) const;
+  T& FindLast(const T&);
+  const T& FindLast(const T&) const;
   [[nodiscard]] int GenerateRandomIndex() const;
   [[nodiscard]] int Midpoint() const;
   [[nodiscard]] int Midpoint(int newSize) const;
@@ -1020,15 +1022,16 @@ int Vector<T>::IndexOf(const T& dataToFind) {
 
 template <typename T>
 int Vector<T>::LastIndexOf(const T& dataToFind) {
-  int counter = 0;
+  int counter = size - 1;
   int index = -1;
 
-  for (int i = 0; i < size; i++) {
+  for (int i = size - 1; i >= 0; i--) {
     if (data[i] == dataToFind) {
       index = counter;
+      break;
     }
 
-    counter++;
+    counter--;
   }
 
   return index;
@@ -1046,6 +1049,24 @@ T& Vector<T>::Find(const T& dataToFind) {
 template <typename T>
 const T& Vector<T>::Find(const T& dataToFind) const {
   for (int i = 0; i < size; i++) {
+    if (data[i] == dataToFind) {
+      return data[i];
+    }
+  }
+}
+
+template <typename T>
+T& Vector<T>::FindLast(const T& dataToFind) {
+  for (int i = size; i >= 0; i--) {
+    if (data[i] == dataToFind) {
+      return data[i];
+    }
+  }
+}
+
+template <typename T>
+const T& Vector<T>::FindLast(const T& dataToFind) const {
+  for (int i = size; i >= 0; i--) {
     if (data[i] == dataToFind) {
       return data[i];
     }
