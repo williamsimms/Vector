@@ -6,7 +6,12 @@
 using namespace std;
 
 int main() {
-  Vector<Vector3> vector;
+  Vector<int> vector{1, 2, 3, 4};
+
+  int x = 12;
+  vector.PushMiddle(x);
+
+  cout << vector;
 
   return 0;
 }

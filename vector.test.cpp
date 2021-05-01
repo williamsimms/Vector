@@ -79,10 +79,10 @@ TEST_CASE("Returns the current size of the vector.", "[Size]") {
     REQUIRE(vector.Size() == 5);
 
     vector.PopBack();
-    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Size() == 4);
 
     vector.PopBack();
-    REQUIRE(vector.Size() == 2);
+    REQUIRE(vector.Size() == 3);
   }
 
   SECTION(
@@ -130,23 +130,31 @@ TEST_CASE("Returns the capacity of the array.", "[Capacity]") {
 
   vector.PushBack(4);
 
-  REQUIRE(vector.Capacity() == 8);
+  REQUIRE(vector.Capacity() == 4);
   REQUIRE(vector.Size() == 4);
+
+  vector.PushBack(5);
+
+  REQUIRE(vector.Capacity() == 8);
+  REQUIRE(vector.Size() == 5);
 }
 
 TEST_CASE("Returns true if the vector is empty, otherwise returns true.",
           "[Empty]") {
   SECTION("Returns true if the list is empty.") {
-    //
+    Vector<int> vector;
+    bool isEmpty = vector.Empty();
+    REQUIRE(isEmpty == true);
   }
 
   SECTION("Returns false if the list is not empty.") {
-    //
+    Vector<int> vector{1, 2, 3};
+    bool isEmpty = vector.Empty();
+    REQUIRE(isEmpty == false);
   }
 }
 
-TEST_CASE("Returns true if the vector is empty, otherwise returns true.",
-          "[Front]") {
+TEST_CASE("Returns a reference to the first element in the array.", "[Front]") {
   SECTION("Returns a reference to the first element in the array.") {
     Vector<int> vector{1, 2, 3, 4, 5};
     REQUIRE(vector.Front() == 1);
@@ -166,8 +174,162 @@ TEST_CASE("Returns true if the vector is empty, otherwise returns true.",
   }
 }
 
-TEST_CASE("Returns true if the vector is empty, otherwise returns true.",
-          "[Back]") {}
+TEST_CASE("Returns a reference to the last element in the array.", "[Back]") {
+  SECTION("Returns a reference to the last element in the array.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+    REQUIRE(vector.Back() == 5);
+  }
 
-TEST_CASE("Returns true if the vector is empty, otherwise returns true.",
-          "[Middle]") {}
+  SECTION("The value of the element can be changed.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+    vector.Back() = 12;
+    REQUIRE(vector.Back() == 12);
+  }
+
+  SECTION(
+      "Returns a reference to the last element in the array when using a "
+      "const Vector.") {
+    const Vector<int> vector{1, 2, 3, 4, 5};
+    REQUIRE(vector.Back() == 5);
+  }
+}
+
+TEST_CASE("Returns a reference to the element at the middle of the array.",
+          "[Middle]") {
+  SECTION("Returns a reference to the middle element in the array.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+    REQUIRE(vector.Middle() == 3);
+  }
+
+  SECTION("The value of the element can be changed.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+    vector.Middle() = 12;
+    REQUIRE(vector.Middle() == 12);
+  }
+
+  SECTION(
+      "Returns a reference to the middle element in the array when using a "
+      "const Vector.") {
+    const Vector<int> vector{1, 2, 3, 4, 5};
+    REQUIRE(vector.Middle() == 3);
+  }
+}
+
+TEST_CASE("Appends a new element to the end of the Vector.", "[Push Back]") {
+  SECTION("Pushes a New element to the end of the array using a l-value.") {
+    Vector<int> vector;
+    REQUIRE(vector.Size() == 0);
+    REQUIRE(vector.Capacity() == 0);
+
+    int x = 5;
+    vector.PushBack(x);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector.Size() == 1);
+    REQUIRE(vector.Capacity() == 1);
+
+    int z = 12;
+    vector.PushBack(z);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector[1] == 12);
+    REQUIRE(vector.Size() == 2);
+    REQUIRE(vector.Capacity() == 2);
+  }
+
+  SECTION("Pushes a New element to the end of the array using a r-value.") {
+    Vector<int> vector;
+    REQUIRE(vector.Size() == 0);
+    REQUIRE(vector.Capacity() == 0);
+
+    vector.PushBack(5);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector.Size() == 1);
+    REQUIRE(vector.Capacity() == 1);
+
+    vector.PushBack(12);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector[1] == 12);
+    REQUIRE(vector.Size() == 2);
+    REQUIRE(vector.Capacity() == 2);
+  }
+}
+
+TEST_CASE("Appends a new element to the front of the Vector.", "[Push Front]") {
+  SECTION("Appends a New element to the front of the vector using a l-value.") {
+    Vector<int> vector;
+    REQUIRE(vector.Size() == 0);
+    REQUIRE(vector.Capacity() == 0);
+
+    int x = 5;
+    vector.PushFront(x);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector.Size() == 1);
+    REQUIRE(vector.Capacity() == 1);
+
+    int z = 12;
+    vector.PushFront(z);
+    REQUIRE(vector[0] == 12);
+    REQUIRE(vector[1] == 5);
+    REQUIRE(vector.Size() == 2);
+    REQUIRE(vector.Capacity() == 2);
+  }
+
+  SECTION("Appends a New element to the front of the vector using a r-value.") {
+    Vector<int> vector;
+    REQUIRE(vector.Size() == 0);
+    REQUIRE(vector.Capacity() == 0);
+
+    vector.PushBack(5);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector.Size() == 1);
+    REQUIRE(vector.Capacity() == 1);
+
+    vector.PushBack(12);
+    REQUIRE(vector[0] == 5);
+    REQUIRE(vector[1] == 12);
+    REQUIRE(vector.Size() == 2);
+    REQUIRE(vector.Capacity() == 2);
+  }
+}
+
+TEST_CASE("Appends a new element to the middle of the Vector.",
+          "[Push Middle]") {
+  SECTION(
+      "Appends a New element to the middle of the vector using a l-value.") {
+    Vector<int> vector{1, 2, 3};
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 3);
+
+    int x = 5;
+    vector.PushMiddle(x);
+    int midpoint = vector.Midpoint();
+    REQUIRE(vector[midpoint] == 5);
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 6);
+
+    int z = 12;
+    vector.PushMiddle(z);
+    int midpointTwo = vector.Midpoint();
+    REQUIRE(vector[midpointTwo] == 12);
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 6);
+  }
+
+  SECTION(
+      "Appends a New element to the middle of the vector using a r-value.") {
+    Vector<int> vector{1, 2, 3};
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 3);
+
+    vector.PushMiddle(5);
+    int midpoint = vector.Midpoint();
+    REQUIRE(vector[midpoint] == 5);
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 6);
+
+    vector.PushMiddle(12);
+    midpoint = vector.Midpoint();
+    REQUIRE(vector[midpoint] == 12);
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 6);
+  }
+}

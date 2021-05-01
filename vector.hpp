@@ -212,6 +212,7 @@ class Vector {
   const T& Find(const T&) const;
   [[nodiscard]] int GenerateRandomIndex() const;
   [[nodiscard]] int Midpoint() const;
+  [[nodiscard]] int Midpoint(int newSize) const;
   void Shuffle();
 
   Iterator begin() {
@@ -465,6 +466,7 @@ T& Vector<T>::Back() {
 
 template <typename T>
 T& Vector<T>::Middle() {
+  assert(this->size > 0);
   int midpoint = this->Midpoint();
   return data[midpoint];
 }
@@ -599,7 +601,7 @@ void Vector<T>::PushMiddle(const T& newData) {
 
   int midpoint = Midpoint();
 
-  for (int i = midpoint; i < size; i++) {
+  for (int i = size; i >= midpoint; i--) {
     data[i + 1] = data[i];
   }
 
@@ -616,7 +618,7 @@ void Vector<T>::PushMiddle(T&& newData) {
 
   int midpoint = Midpoint();
 
-  for (int i = midpoint; i < size; i++) {
+  for (int i = size; i >= midpoint; i--) {
     data[i + 1] = data[i];
   }
 
@@ -836,7 +838,14 @@ void Vector<T>::Merge(T* array, int low, int midpoint, int high) {
 
 template <typename T>
 int Vector<T>::Midpoint() const {
-  int currentLength = size;
+  int currentLength = size - 1;
+  int midpoint = (int)floor(currentLength / 2);
+  return midpoint;
+}
+
+template <typename T>
+int Vector<T>::Midpoint(int newSize) const {
+  int currentLength = newSize - 1;
   int midpoint = (int)floor(currentLength / 2);
   return midpoint;
 }
@@ -852,7 +861,6 @@ void Vector<T>::Shuffle() {
   }
 }
 
-//! Unimplemented
 template <typename T>
 void Vector<T>::Swap(Vector<T>& otherList) {
   if (this == &otherList) {
@@ -860,12 +868,14 @@ void Vector<T>::Swap(Vector<T>& otherList) {
   }
 
   if (otherList.Size() > this->size) {
-    // int initialSize = this->size;
+    int initialSize = this->size;
     this->Resize(otherList.Size());
 
     for (int i = 0; i < otherList.Size(); i++) {
-      //
+      Swap(&data[i], &otherList.data[i]);
     }
+
+    otherList.Resize(initialSize);
   }
 
   if (this->size > otherList.Size()) {
@@ -873,8 +883,10 @@ void Vector<T>::Swap(Vector<T>& otherList) {
     otherList.Resize(initialSize);
 
     for (int i = 0; i < size; i++) {
-      //
+      Swap(&data[i], &otherList.data[i]);
     }
+
+    this->Resize(initialSize);
   }
 
   if (this->size == otherList.Size()) {
@@ -893,6 +905,7 @@ int Vector<T>::RemoveIf(bool(*function(T))) {
       for (int j = i; i < size; j++) {
         data[j] = data[j + 1];
       }
+
       this->size--;
     }
   }
