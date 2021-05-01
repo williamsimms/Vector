@@ -419,3 +419,202 @@ TEST_CASE("Inserta a new element at the desired index.", ";Insert]") {
     REQUIRE(vector[4] == 4);
   }
 }
+
+TEST_CASE("Removes the first element from the Vector.", "[Pop Front]") {
+  Vector<int> vector{1, 2, 3, 4};
+
+  REQUIRE(vector.Size() == 4);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+
+  vector.PopFront();
+
+  REQUIRE(vector.Size() == 3);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector[0] == 2);
+  REQUIRE(vector[1] == 3);
+  REQUIRE(vector[2] == 4);
+}
+
+TEST_CASE("Removes the last element from the Vector.", "[Pop Back]") {
+  Vector<int> vector{1, 2, 3, 4};
+
+  REQUIRE(vector.Size() == 4);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+
+  vector.PopBack();
+
+  REQUIRE(vector.Size() == 3);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+}
+
+TEST_CASE("Removes the element at the middle position from the Vector.",
+          "[Pop Middle]") {
+  Vector<int> vector{1, 2, 3, 4};
+
+  REQUIRE(vector.Size() == 4);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+
+  vector.PopMiddle();
+
+  REQUIRE(vector.Size() == 3);
+  REQUIRE(vector.Capacity() == 4);
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 3);
+  REQUIRE(vector[2] == 4);
+}
+
+TEST_CASE("Removes the element at the desired index from the Vector.",
+          "[Erase]") {
+  SECTION("Removes the first element from the Vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Erase(0);
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 2);
+    REQUIRE(vector[1] == 3);
+    REQUIRE(vector[2] == 4);
+  }
+
+  SECTION("Removes the last element from the Vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Erase(3);
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+  }
+
+  SECTION("Removes the middle element from the Vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Erase(1);
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 3);
+    REQUIRE(vector[2] == 4);
+  }
+
+  SECTION("Removes an arbritrary index from the Vector.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+
+    vector.Erase(2);
+
+    REQUIRE(vector.Size() == 3);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 4);
+  }
+}
+
+TEST_CASE("Returns the element at the desired index.", "[At]") {
+  SECTION("Returns a reference to the element at the provided index.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector.At(0) == 1);
+    REQUIRE(vector.At(1) == 2);
+    REQUIRE(vector.At(2) == 3);
+    REQUIRE(vector.At(3) == 4);
+  }
+
+  SECTION("Allows for the editing of the Reference via the At function.") {
+    Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector.At(0) == 1);
+    REQUIRE(vector.At(1) == 2);
+    REQUIRE(vector.At(2) == 3);
+    REQUIRE(vector.At(3) == 4);
+
+    vector.At(0) = 12;
+    vector.At(3) = 22;
+
+    REQUIRE(vector.At(0) == 12);
+    REQUIRE(vector.At(1) == 2);
+    REQUIRE(vector.At(2) == 3);
+    REQUIRE(vector.At(3) == 22);
+  }
+
+  SECTION(
+      "Returns a non modifiable reference to the element at the provided index "
+      "when working with a const Vector.") {
+    const Vector<int> vector{1, 2, 3, 4};
+
+    REQUIRE(vector.Size() == 4);
+    REQUIRE(vector.Capacity() == 4);
+
+    REQUIRE(vector.At(0) == 1);
+    REQUIRE(vector.At(1) == 2);
+    REQUIRE(vector.At(2) == 3);
+    REQUIRE(vector.At(3) == 4);
+  }
+}

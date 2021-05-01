@@ -695,6 +695,7 @@ void Vector<T>::PopBack() {
 template <typename T>
 void Vector<T>::PopMiddle() {
   int midpoint = Midpoint();
+
   for (int i = midpoint; i < size; i++) {
     data[i] = data[i + 1];
   }
@@ -704,6 +705,19 @@ void Vector<T>::PopMiddle() {
 
 template <typename T>
 void Vector<T>::Erase(int index) {
+  assert(index >= 0);
+  assert(index < size);
+
+  if (index == 0) {
+    PopFront();
+    return;
+  }
+
+  if (index == size - 1) {
+    PopBack();
+    return;
+  }
+
   for (int i = index; i < size; i++) {
     data[i] = data[i + 1];
   }
