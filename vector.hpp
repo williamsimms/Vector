@@ -157,23 +157,17 @@ class Vector {
   void Assign(const initializer_list<T>&);
   void Assign(const std::vector<T>&);
   void Assign(int count, const T& value);
-
   void PushBack(const T&);
   void PushBack(T&&);
-
   void PushFront(const T&);
   void PushFront(T&&);
-
   void PushMiddle(const T&);
   void PushMiddle(T&&);
-
   void Insert(int index, const T& newData);
   void Insert(int index, T&& newData);
-
   void PopFront();
   void PopBack();
   void PopMiddle();
-
   void Erase(int index);
 
   template <typename... Args>
@@ -188,50 +182,36 @@ class Vector {
   int Size() const;
   int MaxSize() const;
   int Capacity() const;
-
   bool Empty() const;
-
   void Reserve(int sizeToReserve);
   void ShrinkToFit();
   void Clear();
   void Resize(int desiredSize);
-
   const T& Front() const;
   const T& Back() const;
   const T& Middle() const;
-
   T& Front();
   T& Back();
   T& Middle();
-
   void Sort();
   void Reverse();
-
   T& At(int index);
   const T& At(int index) const;
-
-  void Swap(const Vector<T>&);
+  void Swap(Vector<T>&);
   void Swap(T*, T*);
-
   int RemoveIf(bool(*function(T)));
-
   void Print() const;
-
   T* Data();
   const T* Data() const;
-
   void ForEach(T(*function(T, int)));
   bool Every(bool(*function(T, int)));
   bool Some(bool(*function(T, int)));
-
   int IndexOf(const T&);
   int LastIndexOf(const T&);
   T& Find(const T&);
   const T& Find(const T&) const;
-
   [[nodiscard]] int GenerateRandomIndex() const;
   [[nodiscard]] int Midpoint() const;
-
   void Shuffle();
 
   Iterator begin() {
@@ -274,13 +254,15 @@ class Vector {
     return it;
   }
 
-  friend ostream& operator<<(ostream& os, const Vector<T>& vector);
+  template <typename U>
+  friend ostream& operator<<(ostream& os, const Vector<U>& vector);
 
   bool operator!=(const Vector<T>&);
   bool operator==(const Vector<T>&);
   bool operator<(const Vector<T>&);
+  bool operator<=(const Vector<T>&);
   bool operator>(const Vector<T>&);
-  auto operator<=>(const Vector<T>) const;
+  bool operator>=(const Vector<T>&);
 
   const T& operator[](int index) const;
   T& operator[](int index);
@@ -306,7 +288,7 @@ Vector<T>::Vector(int size, const T& fillerData) noexcept
 
 template <typename T>
 Vector<T>::Vector(const std::vector<T>& fillerVector) noexcept
-    : size{fillerVector.size()}, capacity{size}, data{new T[capacity]} {
+    : size{(int)fillerVector.size()}, capacity{size}, data{new T[capacity]} {
   for (int i = 0; i < size; i++) {
     data[i] = move(fillerVector[i]);
   }
@@ -314,7 +296,7 @@ Vector<T>::Vector(const std::vector<T>& fillerVector) noexcept
 
 template <typename T>
 Vector<T>::Vector(const initializer_list<T>& initList) noexcept
-    : size{initList.size()}, capacity{size}, data{new T[capacity]} {
+    : size{(int)initList.size()}, capacity{size}, data{new T[capacity]} {
   auto it = initList.begin();
 
   for (int i = 0; i < size; i++) {
@@ -365,6 +347,15 @@ Vector<T>& Vector<T>::operator=(const Vector<T>& otherVector) {
     return;
   }
 
+  delete[] data;
+  this->data = new T[otherVector.size];
+  this->size = otherVector.size;
+  this->capacity = size;
+
+  for (int i = 0; i < size; i++) {
+    data[i] = otherVector[i];
+  }
+
   return *this;
 }
 
@@ -373,6 +364,9 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& otherVector) {
   if (this == &otherVector) {
     return;
   }
+
+  this->data = otherVector.data;
+  otherVector.data = nullptr;
 
   return *this;
 }
@@ -403,13 +397,34 @@ bool Vector<T>::operator<(const Vector<T>& otherVector) {
 }
 
 template <typename T>
+bool Vector<T>::operator<=(const Vector<T>& otherVector) {
+  if (*this == otherVector) {
+    return true;
+  }
+
+  if (*this < otherVector) {
+    return true;
+  }
+
+  return false;
+}
+
+template <typename T>
 bool Vector<T>::operator>(const Vector<T>& otherVector) {
   return this->size > otherVector.Size();
 }
 
 template <typename T>
-auto Vector<T>::operator<=>(const Vector<T> otherVector) const {
-  //
+bool Vector<T>::operator>=(const Vector<T>& otherVector) {
+  if (*this == otherVector) {
+    return true;
+  }
+
+  if (*this > otherVector) {
+    return true;
+  }
+
+  return false;
 }
 
 template <typename T>
@@ -438,11 +453,13 @@ bool Vector<T>::Empty() const {
 
 template <typename T>
 T& Vector<T>::Front() {
+  assert(this->size > 0);
   return data[0];
 }
 
 template <typename T>
 T& Vector<T>::Back() {
+  assert(this->size > 0);
   return data[size - 1];
 }
 
@@ -486,7 +503,7 @@ template <typename T>
 void Vector<T>::Assign(int count, const T& value) {
   int counter = 0;
   while (counter < count) {
-    PushBack(value);
+    PushBack(move(value));
     counter++;
   }
 }
@@ -520,8 +537,8 @@ void Vector<T>::PushFront(const T& newData) {
     Resize(newCapacity);
   }
 
-  for (int i = 0; i < size; i++) {
-    data[i + 1] = data[i];
+  for (int i = size; i >= 0; i--) {
+    data[i] = move(data[i - 1]);
   }
 
   data[0] = newData;
@@ -535,8 +552,8 @@ void Vector<T>::PushFront(T&& newData) {
     Resize(newCapacity);
   }
 
-  for (int i = 0; i < size; i++) {
-    data[i + 1] = data[i];
+  for (int i = size; i >= 0; i--) {
+    data[i] = move(data[i - 1]);
   }
 
   data[0] = move(newData);
@@ -627,10 +644,9 @@ void Vector<T>::EmplaceFront(Args&&... args) {
     Resize(newCapacity);
   }
 
-  for (int i = 0; i < size; i++) {
-    data[i + 1] = data[i];
+  for (int i = size; i >= 0; i--) {
+    data[i] = move(data[i - 1]);
   }
-
   this->data[0] = T(forward<Args>(args)...);
   this->size++;
 }
@@ -705,7 +721,7 @@ void Vector<T>::Resize(int desiredCapacity) {
   }
 
   if (desiredCapacity > capacity) {
-    T newData = new T[desiredCapacity];
+    T* newData = new T[desiredCapacity];
 
     for (int i = 0; i < size; i++) {
       newData[i] = move(data[i]);
@@ -717,7 +733,7 @@ void Vector<T>::Resize(int desiredCapacity) {
   }
 
   if (desiredCapacity < capacity) {
-    T newData = new T[desiredCapacity];
+    T* newData = new T[desiredCapacity];
 
     for (int i = 0; i < desiredCapacity; i++) {
       newData[i] = move(data[i]);
@@ -836,18 +852,35 @@ void Vector<T>::Shuffle() {
   }
 }
 
+//! Unimplemented
 template <typename T>
-void Vector<T>::Swap(const Vector<T>& otherList) {
-  if (otherList.Size() == this->size) {
-    //
+void Vector<T>::Swap(Vector<T>& otherList) {
+  if (this == &otherList) {
+    return;
   }
 
   if (otherList.Size() > this->size) {
-    //
+    // int initialSize = this->size;
+    this->Resize(otherList.Size());
+
+    for (int i = 0; i < otherList.Size(); i++) {
+      //
+    }
   }
 
   if (this->size > otherList.Size()) {
-    //
+    int initialSize = otherList.Size();
+    otherList.Resize(initialSize);
+
+    for (int i = 0; i < size; i++) {
+      //
+    }
+  }
+
+  if (this->size == otherList.Size()) {
+    for (int i = 0; i < size; i++) {
+      Swap(&data[i], &otherList[i]);
+    }
   }
 }
 
@@ -857,7 +890,10 @@ int Vector<T>::RemoveIf(bool(*function(T))) {
     bool shouldRemove = function(data[i]);
 
     if (shouldRemove) {
-      //
+      for (int j = i; i < size; j++) {
+        data[j] = data[j + 1];
+      }
+      this->size--;
     }
   }
 }
@@ -955,6 +991,10 @@ const T& Vector<T>::Find(const T& dataToFind) const {
 
 template <typename T>
 void Vector<T>::Print() const {
+  if (this->size == 0) {
+    return;
+  }
+
   cout << "[";
   for (int i = 0; i < size; i++) {
     cout << data[i];
