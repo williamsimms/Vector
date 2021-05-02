@@ -918,6 +918,14 @@ TEST_CASE(
   REQUIRE(vector.IndexOf(12) == -1);
 }
 
+bool isG(const int& number, int) {
+  if (number > 2) {
+    return true;
+  }
+
+  return false;
+}
+
 TEST_CASE(
     "Returns the index of the last occurence of the provided data in the "
     "Vector. Otherwise returns -1.",
@@ -932,10 +940,31 @@ TEST_CASE(
   REQUIRE(vector.LastIndexOf(12) == -1);
 }
 
-// TEST_CASE(
-//     "Returns a reference to the first occurrence of the element with matching
-//     " "data.",
-//     "[Find]") {
-//   Vector<int> vector{1, 2, 3, 4, 5};
-//   vector.Find(2);
-// }
+TEST_CASE(
+    "Returns a pointer to the first occurrence of the element with matching "
+    "data.",
+    "[Find]") {
+  SECTION(
+      "Returns nullptr if no element in the Vector matches the passed in "
+      "data.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.Find(12) == nullptr);
+  }
+
+  SECTION("Returns a pointer to the first element found with matching data.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(*(vector.Find(1)) == 1);
+    REQUIRE(*(vector.Find(2)) == 2);
+    REQUIRE(*(vector.Find(3)) == 3);
+  }
+
+  SECTION(
+      "Returns a pointer to the first element in which the provided function "
+      "returned a truthy value for its value.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    vector.Find(isG);
+  }
+}

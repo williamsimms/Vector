@@ -199,19 +199,19 @@ class Vector {
   const T& At(int index) const;
   void Swap(Vector<T>&);
   void Swap(T*, T*);
-  int RemoveIf(bool(*function(T)));
+  int RemoveIf(bool (*function)(const T&));
   void Print() const;
   T* Data();
   const T* Data() const;
-  void ForEach(T(*function(T, int)));
-  bool Every(bool(*function(T, int)));
-  bool Some(bool(*function(T, int)));
+  void ForEach(T (*function)(const T&, int));
+  bool Every(bool (*function)(const T&, int));
+  bool Some(bool (*function)(const T&, int));
   int IndexOf(const T&);
   int LastIndexOf(const T&);
-  T& Find(const T&);
-  const T& Find(const T&) const;
-  T& FindLast(const T&);
-  const T& FindLast(const T&) const;
+  T* Find(const T&) const;
+  T* Find(bool (*function)(const T&, int)) const;
+  T* FindLast(const T&) const;
+  T* FindLast(bool (*function)(const T&, int)) const;
   [[nodiscard]] int GenerateRandomIndex() const;
   [[nodiscard]] int Midpoint() const;
   [[nodiscard]] int Midpoint(int newSize) const;
@@ -476,27 +476,32 @@ T& Vector<T>::Middle() {
 
 template <typename T>
 const T& Vector<T>::Front() const {
+  assert(size > 0);
   return data[0];
 }
 
 template <typename T>
 const T& Vector<T>::Back() const {
+  assert(size > 0);
   return data[size - 1];
 }
 
 template <typename T>
 const T& Vector<T>::Middle() const {
+  assert(size > 0);
   int midpoint = this->Midpoint();
   return data[midpoint];
 }
 
 template <typename T>
 T* Vector<T>::Data() {
+  assert(size > 0);
   return data;
 }
 
 template <typename T>
 const T* Vector<T>::Data() const {
+  assert(size > 0);
   return data;
 }
 
@@ -949,7 +954,7 @@ void Vector<T>::Swap(Vector<T>& otherList) {
 }
 
 template <typename T>
-int Vector<T>::RemoveIf(bool(*function(T))) {
+int Vector<T>::RemoveIf(bool (*function)(const T&)) {
   for (int i = 0; i < size; i++) {
     bool shouldRemove = function(data[i]);
 
@@ -964,16 +969,16 @@ int Vector<T>::RemoveIf(bool(*function(T))) {
 }
 
 template <typename T>
-void Vector<T>::ForEach(T(*function(T, int))) {
+void Vector<T>::ForEach(T (*function)(const T&, int)) {
   int index = 0;
   for (int i = 0; i < size; i++) {
-    data[i] = function(data[i], index);
+    data[i] = move(function(data[i], index));
     index++;
   }
 }
 
 template <typename T>
-bool Vector<T>::Every(bool(*function(T, int))) {
+bool Vector<T>::Every(bool (*function)(const T&, int)) {
   int index = 0;
   for (int i = 0; i < size; i++) {
     bool every = function(data[i], index);
@@ -989,7 +994,7 @@ bool Vector<T>::Every(bool(*function(T, int))) {
 }
 
 template <typename T>
-bool Vector<T>::Some(bool(*function(T, int))) {
+bool Vector<T>::Some(bool (*function)(const T&, int)) {
   int index = 0;
   for (int i = 0; i < size; i++) {
     bool some = function(data[i], index);
@@ -1038,25 +1043,29 @@ int Vector<T>::LastIndexOf(const T& dataToFind) {
 }
 
 template <typename T>
-T& Vector<T>::Find(const T& dataToFind) {
+T* Vector<T>::Find(const T& dataToFind) const {
   for (int i = 0; i < size; i++) {
     if (data[i] == dataToFind) {
       return data[i];
     }
   }
+
+  return nullptr;
 }
 
 template <typename T>
-const T& Vector<T>::Find(const T& dataToFind) const {
+T* Vector<T>::Find(bool (*function)(const T&, int)) const {
   for (int i = 0; i < size; i++) {
-    if (data[i] == dataToFind) {
+    if (function(data[i], i)) {
       return data[i];
     }
   }
+
+  return nullptr;
 }
 
 template <typename T>
-T& Vector<T>::FindLast(const T& dataToFind) {
+T* Vector<T>::FindLast(const T& dataToFind) const {
   for (int i = size; i >= 0; i--) {
     if (data[i] == dataToFind) {
       return data[i];
@@ -1065,12 +1074,14 @@ T& Vector<T>::FindLast(const T& dataToFind) {
 }
 
 template <typename T>
-const T& Vector<T>::FindLast(const T& dataToFind) const {
+T* Vector<T>::FindLast(bool (*function)(const T&, int)) const {
   for (int i = size; i >= 0; i--) {
-    if (data[i] == dataToFind) {
+    if (function(data[i], i)) {
       return data[i];
     }
   }
+
+  return nullptr;
 }
 
 template <typename T>
