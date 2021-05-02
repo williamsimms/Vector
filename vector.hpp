@@ -928,23 +928,27 @@ void Vector<T>::Swap(Vector<T>& otherList) {
   if (otherList.Size() > this->size) {
     int initialSize = this->size;
     this->Resize(otherList.Size());
+    this->size = otherList.size;
 
     for (int i = 0; i < otherList.Size(); i++) {
       Swap(&data[i], &otherList.data[i]);
     }
 
     otherList.Resize(initialSize);
+    otherList.size = initialSize;
   }
 
   if (this->size > otherList.Size()) {
     int initialSize = otherList.Size();
-    otherList.Resize(initialSize);
+    otherList.Resize(this->size);
+    otherList.size = this->size;
 
     for (int i = 0; i < size; i++) {
       Swap(&data[i], &otherList.data[i]);
     }
 
     this->Resize(initialSize);
+    this->size = initialSize;
   }
 
   if (this->size == otherList.Size()) {

@@ -1296,17 +1296,160 @@ TEST_CASE(
   REQUIRE(vector[1] == 2);
   REQUIRE(vector[2] == 3);
   REQUIRE(vector[3] == 4);
-  REQUIRE(vector[4] == 0);
+  REQUIRE(vector[4] == 1);
 }
 
-TEST_CASE("", "[Swap Vectors]") {
+TEST_CASE("Swaps the elements of two Vectors.", "[Swap Vectors]") {
+  SECTION("Swaps the Vectors when the first vector has more elements.") {
+    Vector<int> vectorOne{1, 2, 3, 4, 5};
+    Vector<int> vectorTwo{1, 2};
+
+    REQUIRE(vectorOne[0] == 1);
+    REQUIRE(vectorOne[1] == 2);
+    REQUIRE(vectorOne[2] == 3);
+    REQUIRE(vectorOne[3] == 4);
+    REQUIRE(vectorOne[4] == 5);
+
+    REQUIRE(vectorTwo[0] == 1);
+    REQUIRE(vectorTwo[1] == 2);
+
+    REQUIRE(vectorOne.Size() == 5);
+    REQUIRE(vectorTwo.Size() == 2);
+
+    vectorOne.Swap(vectorTwo);
+
+    REQUIRE(vectorTwo[0] == 1);
+    REQUIRE(vectorTwo[1] == 2);
+    REQUIRE(vectorTwo[2] == 3);
+    REQUIRE(vectorTwo[3] == 4);
+    REQUIRE(vectorTwo[4] == 5);
+
+    REQUIRE(vectorOne[0] == 1);
+    REQUIRE(vectorOne[1] == 2);
+
+    REQUIRE(vectorOne.Size() == 2);
+    REQUIRE(vectorTwo.Size() == 5);
+  }
+
+  SECTION("Swaps the vectors when the second vector has more elements.") {
+    Vector<int> vectorOne{1, 2};
+    Vector<int> vectorTwo{1, 2, 3, 4, 5};
+
+    REQUIRE(vectorOne[0] == 1);
+    REQUIRE(vectorOne[1] == 2);
+
+    REQUIRE(vectorTwo[0] == 1);
+    REQUIRE(vectorTwo[1] == 2);
+    REQUIRE(vectorTwo[2] == 3);
+    REQUIRE(vectorTwo[3] == 4);
+    REQUIRE(vectorTwo[4] == 5);
+
+    REQUIRE(vectorOne.Size() == 2);
+    REQUIRE(vectorTwo.Size() == 5);
+
+    vectorOne.Swap(vectorTwo);
+
+    REQUIRE(vectorOne[0] == 1);
+    REQUIRE(vectorOne[1] == 2);
+    REQUIRE(vectorOne[2] == 3);
+    REQUIRE(vectorOne[3] == 4);
+    REQUIRE(vectorOne[4] == 5);
+
+    REQUIRE(vectorTwo[0] == 1);
+    REQUIRE(vectorTwo[1] == 2);
+
+    REQUIRE(vectorOne.Size() == 5);
+    REQUIRE(vectorTwo.Size() == 2);
+  }
+
+  SECTION("Swaps the vectors when both the vectors have the same length.") {
+    Vector<int> vectorOne{1, 2, 3};
+    Vector<int> vectorTwo{6, 7, 8};
+
+    REQUIRE(vectorOne[0] == 1);
+    REQUIRE(vectorOne[1] == 2);
+    REQUIRE(vectorOne[2] == 3);
+
+    REQUIRE(vectorTwo[0] == 6);
+    REQUIRE(vectorTwo[1] == 7);
+    REQUIRE(vectorTwo[2] == 8);
+
+    REQUIRE(vectorOne.Size() == 3);
+    REQUIRE(vectorTwo.Size() == 3);
+
+    vectorOne.Swap(vectorTwo);
+
+    REQUIRE(vectorTwo[0] == 1);
+    REQUIRE(vectorTwo[1] == 2);
+    REQUIRE(vectorTwo[2] == 3);
+
+    REQUIRE(vectorOne[0] == 6);
+    REQUIRE(vectorOne[1] == 7);
+    REQUIRE(vectorOne[2] == 8);
+
+    REQUIRE(vectorOne.Size() == 3);
+    REQUIRE(vectorTwo.Size() == 3);
+  }
+}
+
+TEST_CASE("Concatenates one vector to the end of another.", "[Concat]") {
   Vector<int> vectorOne{1, 2, 3, 4, 5};
   Vector<int> vectorTwo{6, 7, 8, 9, 10};
 
-  vectorOne.Swap(vectorTwo);
+  REQUIRE(vectorOne[0] == 1);
+  REQUIRE(vectorOne[1] == 2);
+  REQUIRE(vectorOne[2] == 3);
+  REQUIRE(vectorOne[3] == 4);
+  REQUIRE(vectorOne[4] == 5);
+
+  REQUIRE(vectorTwo[0] == 6);
+  REQUIRE(vectorTwo[1] == 7);
+  REQUIRE(vectorTwo[2] == 8);
+  REQUIRE(vectorTwo[3] == 9);
+  REQUIRE(vectorTwo[4] == 10);
+
+  vectorOne.Concat(vectorTwo);
+
+  REQUIRE(vectorOne[0] == 1);
+  REQUIRE(vectorOne[1] == 2);
+  REQUIRE(vectorOne[2] == 3);
+  REQUIRE(vectorOne[3] == 4);
+  REQUIRE(vectorOne[4] == 5);
+  REQUIRE(vectorOne[5] == 6);
+  REQUIRE(vectorOne[6] == 7);
+  REQUIRE(vectorOne[7] == 8);
+  REQUIRE(vectorOne[8] == 9);
+  REQUIRE(vectorOne[9] == 10);
 }
 
-// !Swap
-// !RemoveIf
-// !Concat
-// !FreeCapacity
+TEST_CASE("Returns the amount of free capacity the vector has available.",
+          "[Free Capacity]") {
+  Vector<int> vector{1, 2, 3, 4, 5};
+
+  REQUIRE(vector.Size() == 5);
+  REQUIRE(vector.Capacity() == 5);
+  REQUIRE(vector.FreeCapacity() == 0);
+
+  vector.PushBack(6);
+
+  REQUIRE(vector.Size() == 6);
+  REQUIRE(vector.Capacity() == 10);
+  REQUIRE(vector.FreeCapacity() == 4);
+
+  vector.Reserve(20);
+
+  REQUIRE(vector.Size() == 6);
+  REQUIRE(vector.Capacity() == 20);
+  REQUIRE(vector.FreeCapacity() == 14);
+}
+
+// TEST_CASE(
+//     "Removes elements in the Vector which suffice the passed in Function. "
+//     "Returns the amount of elements which were removed.",
+//     "[Remove If]") {
+//   SECTION("") {
+//     //
+//   }
+
+//   Vector<int> vectorOne{1, 2, 3, 4, 5};
+// }
