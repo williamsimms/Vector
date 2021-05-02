@@ -918,14 +918,6 @@ TEST_CASE(
   REQUIRE(vector.IndexOf(12) == -1);
 }
 
-bool isG(const int& number, int) {
-  if (number > 2) {
-    return true;
-  }
-
-  return false;
-}
-
 TEST_CASE(
     "Returns the index of the last occurence of the provided data in the "
     "Vector. Otherwise returns -1.",
@@ -953,11 +945,33 @@ TEST_CASE(
   }
 
   SECTION("Returns a pointer to the first element found with matching data.") {
-    Vector<int> vector{1, 2, 3, 4, 5};
+    Vector<int> vector{1, 2, 3, 4, 5, 1, 2, 3};
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
+    REQUIRE(vector[5] == 1);
+    REQUIRE(vector[6] == 2);
+    REQUIRE(vector[7] == 3);
 
     REQUIRE(*(vector.Find(1)) == 1);
     REQUIRE(*(vector.Find(2)) == 2);
     REQUIRE(*(vector.Find(3)) == 3);
+
+    *(vector.Find(1)) += 10;
+    *(vector.Find(2)) += 10;
+    *(vector.Find(3)) += 10;
+
+    REQUIRE(vector[0] == 11);
+    REQUIRE(vector[1] == 12);
+    REQUIRE(vector[2] == 13);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
+    REQUIRE(vector[5] == 1);
+    REQUIRE(vector[6] == 2);
+    REQUIRE(vector[7] == 3);
   }
 
   SECTION(
@@ -965,6 +979,93 @@ TEST_CASE(
       "returned a truthy value for its value.") {
     Vector<int> vector{1, 2, 3, 4, 5};
 
-    vector.Find(isG);
+    int* foundElement = vector.Find([](const int& number, int) {
+      if (number > 2) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(*foundElement == 3);
+
+    int* foundElementTwo = vector.Find([](const int& number, int) {
+      if (number % 2 == 0) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(*foundElementTwo == 2);
+  }
+}
+
+TEST_CASE(
+    "Returns a pointer to the last occurrence of the element with matching "
+    "data.",
+    "[Find Last]") {
+  SECTION(
+      "Returns nullptr if no element in the Vector matches the passed in "
+      "data.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    REQUIRE(vector.FindLast(12) == nullptr);
+  }
+
+  SECTION("Returns a pointer to the last element found with matching data.") {
+    Vector<int> vector{1, 2, 3, 4, 5, 1, 2, 3};
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
+    REQUIRE(vector[5] == 1);
+    REQUIRE(vector[6] == 2);
+    REQUIRE(vector[7] == 3);
+
+    REQUIRE(*(vector.FindLast(1)) == 1);
+    REQUIRE(*(vector.FindLast(2)) == 2);
+    REQUIRE(*(vector.FindLast(3)) == 3);
+
+    *(vector.FindLast(1)) += 10;
+    *(vector.FindLast(2)) += 10;
+    *(vector.FindLast(3)) += 10;
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 2);
+    REQUIRE(vector[2] == 3);
+    REQUIRE(vector[3] == 4);
+    REQUIRE(vector[4] == 5);
+    REQUIRE(vector[5] == 11);
+    REQUIRE(vector[6] == 12);
+    REQUIRE(vector[7] == 13);
+  }
+
+  SECTION(
+      "Returns a pointer to the last element in which the provided function "
+      "returned a truthy value for its value.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    int* foundElement = vector.FindLast([](const int& number, int) {
+      if (number > 2) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(*foundElement == 5);
+
+    int* foundElementTwo = vector.FindLast([](const int& number, int) {
+      if (number % 2 == 0) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(*foundElementTwo == 4);
   }
 }

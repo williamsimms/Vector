@@ -495,13 +495,11 @@ const T& Vector<T>::Middle() const {
 
 template <typename T>
 T* Vector<T>::Data() {
-  assert(size > 0);
   return data;
 }
 
 template <typename T>
 const T* Vector<T>::Data() const {
-  assert(size > 0);
   return data;
 }
 
@@ -1046,7 +1044,7 @@ template <typename T>
 T* Vector<T>::Find(const T& dataToFind) const {
   for (int i = 0; i < size; i++) {
     if (data[i] == dataToFind) {
-      return data[i];
+      return &data[i];
     }
   }
 
@@ -1057,7 +1055,7 @@ template <typename T>
 T* Vector<T>::Find(bool (*function)(const T&, int)) const {
   for (int i = 0; i < size; i++) {
     if (function(data[i], i)) {
-      return data[i];
+      return &data[i];
     }
   }
 
@@ -1066,18 +1064,20 @@ T* Vector<T>::Find(bool (*function)(const T&, int)) const {
 
 template <typename T>
 T* Vector<T>::FindLast(const T& dataToFind) const {
-  for (int i = size; i >= 0; i--) {
+  for (int i = size - 1; i >= 0; i--) {
     if (data[i] == dataToFind) {
-      return data[i];
+      return &data[i];
     }
   }
+
+  return nullptr;
 }
 
 template <typename T>
 T* Vector<T>::FindLast(bool (*function)(const T&, int)) const {
-  for (int i = size; i >= 0; i--) {
+  for (int i = size - 1; i >= 0; i--) {
     if (function(data[i], i)) {
-      return data[i];
+      return &data[i];
     }
   }
 
