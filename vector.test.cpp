@@ -1069,3 +1069,39 @@ TEST_CASE(
     REQUIRE(*foundElementTwo == 4);
   }
 }
+
+TEST_CASE("Sorts the Vector using Merge Sort.", "[Sort]") {
+  Vector<int> vector{5, 4, 3, 2, 1};
+
+  REQUIRE(vector[0] == 5);
+  REQUIRE(vector[1] == 4);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 2);
+  REQUIRE(vector[4] == 1);
+
+  vector.Sort();
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+  REQUIRE(vector[4] == 5);
+}
+
+TEST_CASE("Reverses the Vector.", "[Reverse]") {
+  Vector<int> vector{1, 4, 3, 5, 2};
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 4);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 5);
+  REQUIRE(vector[4] == 2);
+
+  vector.Reverse();
+
+  REQUIRE(vector[0] == 2);
+  REQUIRE(vector[1] == 5);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+  REQUIRE(vector[4] == 1);
+}

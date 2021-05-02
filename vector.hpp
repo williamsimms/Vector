@@ -140,8 +140,8 @@ class Vector {
   T* data;
 
  private:
-  void MergeSort(T* array, int low, int high);
-  void Merge(T* array, int low, int midpoint, int high);
+  int Partition(T* array, int low, int high);
+  void QuickSort(T* array, int low, int high);
 
  public:
   Vector() noexcept;
@@ -842,7 +842,7 @@ template <typename T>
 
 template <typename T>
 void Vector<T>::Sort() {
-  this->MergeSort(data, 0, size - 1);
+  this->QuickSort(data, 0, size - 1);
 }
 
 template <typename T>
@@ -853,42 +853,36 @@ void Vector<T>::Reverse() {
 }
 
 template <typename T>
-void MergeSort(T* array, int low, int high) {
+void Vector<T>::QuickSort(T* array, int low, int high) {
   if (low < high) {
-    int midpoint = (low + high) / 2;
-    MergeSort(array, low, midpoint);
-    MergeSort(array, midpoint + 1, high);
-    MergeSort(array, low, midpoint, high);
+    int partition = this->Partition(array, low, high);
+    QuickSort(array, low, partition - 1);
+    QuickSort(array, partition + 1, high);
   }
 }
 
 template <typename T>
-void Vector<T>::Merge(T* array, int low, int midpoint, int high) {
-  T temporaryStore[size];
-  int i = low;
-  int j = midpoint + 1;
-  int k = 0;
+int Vector<T>::Partition(T* array, int low, int high) {
+  int i = low - 1;
+  int j = low;
+  T k = array[high];
 
-  while (i <= midpoint && j <= high) {
-    if (array[i] <= array[j]) {
-      temporaryStore[k++] = array[i++];
-    } else {
-      temporaryStore[k++] = array[j++];
+  while (j < high) {
+    if (array[j] <= k) {
+      i++;
+
+      if (i != j) {
+        Swap(&array[i], &array[j]);
+      }
     }
+
+    j++;
   }
 
-  while (i <= midpoint) {
-    temporaryStore[k++] = array[i++];
-  }
-
-  while (j <= high) {
-    temporaryStore[k++] = array[j++];
-  }
-  k--;
-  while (k >= 0) {
-    array[k + low] = temporaryStore[k];
-    k--;
-  }
+  T temp = array[i + 1];
+  array[i + 1] = array[high];
+  array[high] = temp;
+  return i + 1;
 }
 
 template <typename T>
@@ -1082,6 +1076,13 @@ T* Vector<T>::FindLast(bool (*function)(const T&, int)) const {
   }
 
   return nullptr;
+}
+
+template <typename T>
+void Vector<T>::Swap(T* a, T* b) {
+  T temporary = move(*a);
+  *a = move(*b);
+  *b = move(temporary);
 }
 
 template <typename T>
