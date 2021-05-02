@@ -181,6 +181,7 @@ class Vector {
   int Size() const;
   int MaxSize() const;
   int Capacity() const;
+  int FreeCapacity() const;
   bool Empty() const;
   void Reserve(int sizeToReserve);
   void Resize(int desiredSize);
@@ -200,12 +201,13 @@ class Vector {
   void Swap(Vector<T>&);
   void Swap(T*, T*);
   int RemoveIf(bool (*function)(const T&));
+  bool RemoveIndexIf(int index, bool (*function)(const T&));
   void Print() const;
   T* Data();
   const T* Data() const;
   void ForEach(T (*function)(const T&, int));
   bool Every(bool (*function)(const T&, int));
-  bool Some(bool (*function)(const T&, int));
+  bool Any(bool (*function)(const T&, int));
   int IndexOf(const T&);
   int LastIndexOf(const T&);
   T* Find(const T&) const;
@@ -216,6 +218,8 @@ class Vector {
   [[nodiscard]] int Midpoint() const;
   [[nodiscard]] int Midpoint(int newSize) const;
   void Shuffle();
+  void Concat(const Vector<T>&);
+  void Concat(Vector<T>&&);
 
   Iterator begin() {
     Iterator it(data);
@@ -260,12 +264,12 @@ class Vector {
   template <typename U>
   friend ostream& operator<<(ostream& os, const Vector<U>& vector);
 
-  bool operator!=(const Vector<T>&);
-  bool operator==(const Vector<T>&);
-  bool operator<(const Vector<T>&);
-  bool operator<=(const Vector<T>&);
-  bool operator>(const Vector<T>&);
-  bool operator>=(const Vector<T>&);
+  bool operator!=(const Vector<T>&) const;
+  bool operator==(const Vector<T>&) const;
+  bool operator<(const Vector<T>&) const;
+  bool operator<=(const Vector<T>&) const;
+  bool operator>(const Vector<T>&) const;
+  bool operator>=(const Vector<T>&) const;
 
   const T& operator[](int index) const;
   T& operator[](int index);
@@ -376,7 +380,7 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& otherVector) {
 }
 
 template <typename T>
-bool Vector<T>::operator==(const Vector<T>& otherVector) {
+bool Vector<T>::operator==(const Vector<T>& otherVector) const {
   if (this->size != otherVector.Size()) {
     return false;
   }
@@ -391,22 +395,22 @@ bool Vector<T>::operator==(const Vector<T>& otherVector) {
 }
 
 template <typename T>
-bool Vector<T>::operator!=(const Vector<T>& otherVector) {
+bool Vector<T>::operator!=(const Vector<T>& otherVector) const {
   return !(*this == otherVector);
 }
 
 template <typename T>
-bool Vector<T>::operator<(const Vector<T>& otherVector) {
+bool Vector<T>::operator<(const Vector<T>& otherVector) const {
   return this->size < otherVector.Size();
 }
 
 template <typename T>
-bool Vector<T>::operator<=(const Vector<T>& otherVector) {
-  if (*this == otherVector) {
+bool Vector<T>::operator<=(const Vector<T>& otherVector) const {
+  if (*this == &otherVector) {
     return true;
   }
 
-  if (*this < otherVector) {
+  if (this->size <= otherVector.Size()) {
     return true;
   }
 
@@ -414,17 +418,17 @@ bool Vector<T>::operator<=(const Vector<T>& otherVector) {
 }
 
 template <typename T>
-bool Vector<T>::operator>(const Vector<T>& otherVector) {
+bool Vector<T>::operator>(const Vector<T>& otherVector) const {
   return this->size > otherVector.Size();
 }
 
 template <typename T>
-bool Vector<T>::operator>=(const Vector<T>& otherVector) {
-  if (*this == otherVector) {
+bool Vector<T>::operator>=(const Vector<T>& otherVector) const {
+  if (*this == &otherVector) {
     return true;
   }
 
-  if (*this > otherVector) {
+  if (this->size >= otherVector.Size()) {
     return true;
   }
 
@@ -444,6 +448,11 @@ int Vector<T>::MaxSize() const {
 template <typename T>
 int Vector<T>::Capacity() const {
   return this->capacity;
+}
+
+template <typename T>
+int Vector<T>::FreeCapacity() const {
+  return this->capacity - this->size;
 }
 
 template <typename T>
@@ -947,6 +956,8 @@ void Vector<T>::Swap(Vector<T>& otherList) {
 
 template <typename T>
 int Vector<T>::RemoveIf(bool (*function)(const T&)) {
+  int amountRemoved = 0;
+
   for (int i = 0; i < size; i++) {
     bool shouldRemove = function(data[i]);
 
@@ -958,6 +969,20 @@ int Vector<T>::RemoveIf(bool (*function)(const T&)) {
       this->size--;
     }
   }
+
+  return amountRemoved;
+}
+
+template <typename T>
+bool Vector<T>::RemoveIndexIf(int index, bool (*function)(const T&)) {
+  bool shouldRemove = function(index);
+
+  if (shouldRemove) {
+    this->Erase(index);
+    return true;
+  }
+
+  return false;
 }
 
 template <typename T>
@@ -986,7 +1011,7 @@ bool Vector<T>::Every(bool (*function)(const T&, int)) {
 }
 
 template <typename T>
-bool Vector<T>::Some(bool (*function)(const T&, int)) {
+bool Vector<T>::Any(bool (*function)(const T&, int)) {
   int index = 0;
   for (int i = 0; i < size; i++) {
     bool some = function(data[i], index);
@@ -1083,6 +1108,24 @@ void Vector<T>::Swap(T* a, T* b) {
   T temporary = move(*a);
   *a = move(*b);
   *b = move(temporary);
+}
+
+template <typename T>
+void Vector<T>::Concat(const Vector<T>& otherVector) {
+  if (otherVector.Size() == 0) {
+    return;
+  }
+
+  int otherVectorSize = otherVector.size;
+  int freeCapacity = this->FreeCapacity();
+
+  if (otherVectorSize > freeCapacity) {
+    this->Resize(freeCapacity + otherVectorSize);
+  }
+
+  for (int i = 0; i < otherVector.Size(); i++) {
+    PushBack(otherVector[i]);
+  }
 }
 
 template <typename T>

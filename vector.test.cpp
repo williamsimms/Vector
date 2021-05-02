@@ -1105,3 +1105,208 @@ TEST_CASE("Reverses the Vector.", "[Reverse]") {
   REQUIRE(vector[3] == 4);
   REQUIRE(vector[4] == 1);
 }
+
+TEST_CASE(
+    "Removes the proved index from the Vector, and returns true; otherwise "
+    "returns false.",
+    "[Remove Index If]") {
+  SECTION("Returns false when the list is empty.") {
+    Vector<int> vector;
+
+    bool removed = vector.RemoveIndexIf(2, [](const int& number) {
+      if (number > 2) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(removed == false);
+  }
+
+  SECTION(
+      "Returns false when no element in the Vector suffices the provided "
+      "function. No element is removed from the Vector.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool removed = vector.RemoveIndexIf(0, [](const int& number) {
+      if (number == 10) {
+        return true;
+      }
+      return false;
+    });
+
+    REQUIRE(removed == false);
+  }
+
+  SECTION(
+      "Returns true and removes the element at the provided index in the "
+      "Vector.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool removed = vector.RemoveIndexIf(0, [](const int& number) {
+      if (number < 5) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(removed == true);
+  }
+}
+
+TEST_CASE(
+    "Applies a transformation to every element in the Vector, based on the "
+    "passed in Function.",
+    "[For Each]") {
+  Vector<int> vector{1, 2, 3, 4, 5};
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+  REQUIRE(vector[4] == 5);
+
+  vector.ForEach([](const int& number, int) { return number + 10; });
+
+  REQUIRE(vector[0] == 11);
+  REQUIRE(vector[1] == 12);
+  REQUIRE(vector[2] == 13);
+  REQUIRE(vector[3] == 14);
+  REQUIRE(vector[4] == 15);
+}
+
+TEST_CASE(
+    "Returns true if any of the elements in the Vector, suffice the passed in "
+    "Function.",
+    "[Any]") {
+  SECTION(
+      "Returns false if no elements in the Vector Suffice the passed in "
+      "Function.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool any = vector.Any([](const int& number, int) {
+      if (number > 100) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(any == false);
+  }
+
+  SECTION(
+      "Returns true if any elements in the Vector Suffice the passed in "
+      "Function.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool any = vector.Any([](const int& number, int) {
+      if (number > 4) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(any == true);
+  }
+}
+
+TEST_CASE(
+    "Returns true if all of the elements in the Vector, suffice the passed in "
+    "Function.",
+    "[Any]") {
+  SECTION(
+      "Returns false if no elements in the Vector Suffice the passed in "
+      "Function.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool every = vector.Every([](const int& number, int) {
+      if (number > 100) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(every == false);
+  }
+
+  SECTION(
+      "Returns false if even one element does not suffice the passed in "
+      "function.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool every = vector.Every([](const int& number, int) {
+      if (number > 1) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(every == false);
+  }
+
+  SECTION(
+      "Returns true if all elements in the Vector suffice the passed in "
+      "function.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    bool every = vector.Every([](const int& number, int) {
+      if (number < 10) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(every == true);
+  }
+}
+
+TEST_CASE("Shuffles the elements of the Vector.", "[Shuffle]") {
+  Vector<int> vectorOne{1, 2, 3, 4, 5};
+  Vector<int> vectorTwo{1, 2, 3, 4, 5};
+
+  REQUIRE(vectorOne == vectorTwo);
+
+  vectorOne.Shuffle();
+
+  REQUIRE(vectorOne != vectorTwo);
+}
+
+TEST_CASE(
+    "Swaps the data of two memebers of type T. Takes in two T pointers to swap "
+    "the elements in place.",
+    "[Swap Elements]") {
+  Vector<int> vector{1, 2, 3, 4, 5};
+
+  REQUIRE(vector[0] == 1);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+  REQUIRE(vector[4] == 5);
+
+  vector.Swap(&vector[0], &vector[4]);
+
+  REQUIRE(vector[0] == 5);
+  REQUIRE(vector[1] == 2);
+  REQUIRE(vector[2] == 3);
+  REQUIRE(vector[3] == 4);
+  REQUIRE(vector[4] == 0);
+}
+
+TEST_CASE("", "[Swap Vectors]") {
+  Vector<int> vectorOne{1, 2, 3, 4, 5};
+  Vector<int> vectorTwo{6, 7, 8, 9, 10};
+
+  vectorOne.Swap(vectorTwo);
+}
+
+// !Swap
+// !RemoveIf
+// !Concat
+// !FreeCapacity
