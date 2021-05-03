@@ -274,8 +274,8 @@ class Vector {
   const T& operator[](int index) const;
   T& operator[](int index);
 
-  Vector<T>& operator=(const Vector<T>& otherVector);
-  Vector<T>& operator=(Vector<T>&&);
+  Vector<T>& operator=(const Vector<T>& otherVector) noexcept;
+  Vector<T>& operator=(Vector<T>&&) noexcept;
 };
 
 template <typename T>
@@ -324,6 +324,8 @@ template <typename T>
 Vector<T>::Vector(Vector&& otherList) noexcept
     : size{otherList.Size()}, capacity{size}, data{new T[capacity]} {
   data = otherList.data;
+  this->size = otherList.size;
+  this->capacity = otherList.capacity;
   otherList.data = nullptr;
 }
 
@@ -350,7 +352,7 @@ T& Vector<T>::operator[](int index) {
 }
 
 template <typename T>
-Vector<T>& Vector<T>::operator=(const Vector<T>& otherVector) {
+Vector<T>& Vector<T>::operator=(const Vector<T>& otherVector) noexcept {
   if (this == &otherVector) {
     return;
   }
@@ -368,12 +370,15 @@ Vector<T>& Vector<T>::operator=(const Vector<T>& otherVector) {
 }
 
 template <typename T>
-Vector<T>& Vector<T>::operator=(Vector<T>&& otherVector) {
+Vector<T>& Vector<T>::operator=(Vector<T>&& otherVector) noexcept {
   if (this == &otherVector) {
     return;
   }
 
+  this->Clear();
   this->data = otherVector.data;
+  this->size = otherVector.size;
+  this->capacity = otherVector.capacity;
   otherVector.data = nullptr;
 
   return *this;
@@ -925,10 +930,10 @@ void Vector<T>::Swap(Vector<T>& otherList) {
     return;
   }
 
-  if (otherList.Size() > this->size) {
+  if (otherList.Size() > this->capacity) {
     int initialSize = this->size;
     this->Resize(otherList.Size());
-    this->size = otherList.size;
+    this->size = otherList.Size();
 
     for (int i = 0; i < otherList.Size(); i++) {
       Swap(&data[i], &otherList.data[i]);
@@ -938,7 +943,7 @@ void Vector<T>::Swap(Vector<T>& otherList) {
     otherList.size = initialSize;
   }
 
-  if (this->size > otherList.Size()) {
+  if (this->capacity > otherList.Size()) {
     int initialSize = otherList.Size();
     otherList.Resize(this->size);
     otherList.size = this->size;

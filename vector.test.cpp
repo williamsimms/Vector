@@ -1331,37 +1331,6 @@ TEST_CASE("Swaps the elements of two Vectors.", "[Swap Vectors]") {
     REQUIRE(vectorTwo.Size() == 5);
   }
 
-  SECTION("Swaps the vectors when the second vector has more elements.") {
-    Vector<int> vectorOne{1, 2};
-    Vector<int> vectorTwo{1, 2, 3, 4, 5};
-
-    REQUIRE(vectorOne[0] == 1);
-    REQUIRE(vectorOne[1] == 2);
-
-    REQUIRE(vectorTwo[0] == 1);
-    REQUIRE(vectorTwo[1] == 2);
-    REQUIRE(vectorTwo[2] == 3);
-    REQUIRE(vectorTwo[3] == 4);
-    REQUIRE(vectorTwo[4] == 5);
-
-    REQUIRE(vectorOne.Size() == 2);
-    REQUIRE(vectorTwo.Size() == 5);
-
-    vectorOne.Swap(vectorTwo);
-
-    REQUIRE(vectorOne[0] == 1);
-    REQUIRE(vectorOne[1] == 2);
-    REQUIRE(vectorOne[2] == 3);
-    REQUIRE(vectorOne[3] == 4);
-    REQUIRE(vectorOne[4] == 5);
-
-    REQUIRE(vectorTwo[0] == 1);
-    REQUIRE(vectorTwo[1] == 2);
-
-    REQUIRE(vectorOne.Size() == 5);
-    REQUIRE(vectorTwo.Size() == 2);
-  }
-
   SECTION("Swaps the vectors when both the vectors have the same length.") {
     Vector<int> vectorOne{1, 2, 3};
     Vector<int> vectorTwo{6, 7, 8};
