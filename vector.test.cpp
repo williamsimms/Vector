@@ -1468,7 +1468,30 @@ TEST_CASE(
     "Returns the index of the element with matching data, otherwise returns "
     "-1.",
     "[Binary Search]") {
-  SECTION() {
-    //
+  SECTION(
+      "Returns -1 if no element in the Vector matches the passed in data.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    int index = vector.BinarySeach(12);
+
+    REQUIRE(index == -1);
+  }
+
+  SECTION(
+      "Returns the index of the element whose data matches the passed in "
+      "data.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
+
+    int index = vector.BinarySeach(1);
+
+    REQUIRE(index == 0);
+
+    index = vector.BinarySeach(5);
+
+    REQUIRE(index == 4);
+
+    index = vector.BinarySeach(3);
+
+    REQUIRE(index == 2);
   }
 }

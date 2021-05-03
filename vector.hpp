@@ -306,7 +306,9 @@ Vector<T>::Vector(const std::vector<T>& fillerVector) noexcept
 
 template <typename T>
 Vector<T>::Vector(const initializer_list<T>& initList) noexcept
-    : size{(int)initList.size()}, capacity{size}, data{new T[capacity]} {
+    : size{static_cast<int>(initList.size())},
+      capacity{size},
+      data{new T[capacity]} {
   auto it = initList.begin();
 
   for (int i = 0; i < size; i++) {
@@ -324,12 +326,12 @@ Vector<T>::Vector(const Vector<T>& otherList) noexcept
 }
 
 template <typename T>
-Vector<T>::Vector(Vector&& otherList) noexcept
-    : size{otherList.Size()}, capacity{size}, data{new T[capacity]} {
-  data = otherList.data;
-  this->size = otherList.size;
-  this->capacity = otherList.capacity;
+Vector<T>::Vector(Vector<T>&& otherList) noexcept
+    : size{otherList.Size()}, capacity{otherList.Capacity()} {
+  this->data = otherList.data;
   otherList.data = nullptr;
+  otherList.capacity = 0;
+  otherList.size = 0;
 }
 
 template <typename T>
@@ -337,6 +339,8 @@ Vector<T>::~Vector() noexcept {
   if (this->capacity > 0) {
     delete[] data;
     data = nullptr;
+    this->capacity = 0;
+    this->size = 0;
   }
 }
 
@@ -383,6 +387,8 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& otherVector) noexcept {
   this->size = otherVector.size;
   this->capacity = otherVector.capacity;
   otherVector.data = nullptr;
+  otherVector.capacity = 0;
+  otherVector.size = 0;
 
   return *this;
 }
@@ -1145,7 +1151,7 @@ int Vector<T>::BinarySeach(const T& target) {
 template <typename T>
 int Vector<T>::BSearch(T* array, const T& target, int left, int right) {
   while (left <= right) {
-    int middle = static_cast<int>(loor((left + right) / 2));
+    int middle = static_cast<int>(floor((left + right) / 2));
     int middleValue = array[middle];
 
     if (target == middleValue) {
@@ -1156,6 +1162,8 @@ int Vector<T>::BSearch(T* array, const T& target, int left, int right) {
       left = middle + 1;
     }
   }
+
+  return -1;
 }
 
 template <typename T>
