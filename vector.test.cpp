@@ -1412,13 +1412,63 @@ TEST_CASE("Returns the amount of free capacity the vector has available.",
   REQUIRE(vector.FreeCapacity() == 14);
 }
 
-// TEST_CASE(
-//     "Removes elements in the Vector which suffice the passed in Function. "
-//     "Returns the amount of elements which were removed.",
-//     "[Remove If]") {
-//   SECTION("") {
-//     //
-//   }
+TEST_CASE(
+    "Removes elements in the Vector which suffice the passed in Function. "
+    "Returns the amount of elements which were removed.",
+    "[Remove If]") {
+  SECTION("Returns 0 if the list is empty.") {
+    Vector<int> vector{1, 2, 3, 4, 5};
 
-//   Vector<int> vectorOne{1, 2, 3, 4, 5};
-// }
+    REQUIRE(vector.Size() == 5);
+
+    int amountRemoved = vector.RemoveIf([](const int& number) {
+      if (number > 10) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(amountRemoved == 0);
+    REQUIRE(vector.Size() == 5);
+  }
+
+  SECTION(
+      "Returns the amount of elements removed, and removes the elements which "
+      "suffice the passed in function.") {
+    Vector<int> vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    REQUIRE(vector.Size() == 10);
+    REQUIRE(vector.Capacity() == 10);
+    REQUIRE(vector.FreeCapacity() == 0);
+
+    int amountRemoved = vector.RemoveIf([](const int& number) {
+      if (number % 2 == 0) {
+        return true;
+      }
+
+      return false;
+    });
+
+    REQUIRE(vector.Size() == 5);
+    REQUIRE(vector.Capacity() == 10);
+    REQUIRE(vector.FreeCapacity() == 5);
+
+    REQUIRE(amountRemoved == 5);
+
+    REQUIRE(vector[0] == 1);
+    REQUIRE(vector[1] == 3);
+    REQUIRE(vector[2] == 5);
+    REQUIRE(vector[3] == 7);
+    REQUIRE(vector[4] == 9);
+  }
+}
+
+TEST_CASE(
+    "Returns the index of the element with matching data, otherwise returns "
+    "-1.",
+    "[Binary Search]") {
+  SECTION() {
+    //
+  }
+}

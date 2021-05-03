@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <ctime>
 #include <initializer_list>
 #include <iostream>
@@ -142,6 +143,7 @@ class Vector {
  private:
   int Partition(T* array, int low, int high);
   void QuickSort(T* array, int low, int high);
+  int BSearch(T* array, const T& target, int left, int right);
 
  public:
   Vector() noexcept;
@@ -220,6 +222,7 @@ class Vector {
   void Shuffle();
   void Concat(const Vector<T>&);
   void Concat(Vector<T>&&);
+  int BinarySeach(const T&);
 
   Iterator begin() {
     Iterator it(data);
@@ -971,11 +974,8 @@ int Vector<T>::RemoveIf(bool (*function)(const T&)) {
     bool shouldRemove = function(data[i]);
 
     if (shouldRemove) {
-      for (int j = i; i < size; j++) {
-        data[j] = data[j + 1];
-      }
-
-      this->size--;
+      Erase(i);
+      amountRemoved++;
     }
   }
 
@@ -1134,6 +1134,27 @@ void Vector<T>::Concat(const Vector<T>& otherVector) {
 
   for (int i = 0; i < otherVector.Size(); i++) {
     PushBack(otherVector[i]);
+  }
+}
+
+template <typename T>
+int Vector<T>::BinarySeach(const T& target) {
+  return this->BSearch(data, target, 0, size - 1);
+}
+
+template <typename T>
+int Vector<T>::BSearch(T* array, const T& target, int left, int right) {
+  while (left <= right) {
+    int middle = static_cast<int>(loor((left + right) / 2));
+    int middleValue = array[middle];
+
+    if (target == middleValue) {
+      return middle;
+    } else if (target < middleValue) {
+      right = middle - 1;
+    } else {
+      left = middle + 1;
+    }
   }
 }
 
