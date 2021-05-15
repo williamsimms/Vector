@@ -1,3 +1,7 @@
+#pragma once
+#ifndef VECTOR_H
+#define VECTOR_H
+
 #include <cassert>
 #include <cmath>
 #include <ctime>
@@ -278,7 +282,7 @@ class Vector {
   T& operator[](int index);
 
   Vector<T>& operator=(const Vector<T>& otherVector) noexcept;
-  Vector<T>& operator=(Vector<T>&&) noexcept;
+  Vector<T>& operator=(Vector<T>&& otherVector) noexcept;
 };
 
 template <typename T>
@@ -1189,3 +1193,5 @@ ostream& operator<<(ostream& os, const Vector<T>& vector) {
   vector.Print();
   return os;
 }
+
+#endif
