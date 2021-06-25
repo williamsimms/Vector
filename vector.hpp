@@ -1,4 +1,3 @@
-#pragma once
 #ifndef VECTOR_H
 #define VECTOR_H
 
@@ -129,6 +128,7 @@ class ReverseVectorIterator {
 
 template <typename T>
 class Vector {
+ public:
   using ValueType = T;
   using PointerType = T*;
   using ConstPointer = const T*;
