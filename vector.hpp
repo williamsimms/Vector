@@ -11,120 +11,8 @@
 #include <utility>
 #include <vector>
 
-using std::cout;
-using std::endl;
-using std::forward;
-using std::initializer_list;
-using std::move;
-using std::ostream;
-
-template <typename Vector>
-class VectorIterator {
- public:
-  using ValueType = typename Vector::ValueType;
-  using PointerType = ValueType*;
-  using ReferenceType = ValueType&;
-
-  explicit VectorIterator(PointerType ptr) : data{ptr} {}
-
- private:
-  PointerType data;
-
- public:
-  VectorIterator& operator++() noexcept {
-    data++;
-    return *this;
-  }
-
-  VectorIterator operator++(int) noexcept {
-    VectorIterator iterator(*this);
-    ++data;
-    return iterator;
-  }
-
-  VectorIterator& operator--() noexcept {
-    --data;
-    return *this;
-  }
-
-  VectorIterator operator--(int) noexcept {
-    VectorIterator iterator(*this);
-    --data;
-    return iterator;
-  }
-
-  ReferenceType operator[](int index) { return *(data + index); }
-
-  PointerType operator->() const { return data; }
-
-  ReferenceType operator*() const { return *data; }
-
-  bool operator==(const VectorIterator& other) const {
-    return data == other.data;
-  }
-
-  bool operator!=(const VectorIterator& other) const {
-    return !(data == other.data);
-  }
-
-  operator VectorIterator<const VectorIterator>() const {
-    return VectorIterator<const VectorIterator>(data);
-  }
-};
-
-template <typename Vector>
-class ReverseVectorIterator {
- public:
-  using ValueType = typename Vector::ValueType;
-  using PointerType = ValueType*;
-  using ReferenceType = ValueType&;
-
-  explicit ReverseVectorIterator(PointerType ptr) : data{ptr} {}
-
- private:
-  PointerType data;
-
- public:
-  ReverseVectorIterator& operator++() noexcept {
-    data--;
-    return *this;
-  }
-
-  ReverseVectorIterator operator++(int) noexcept {
-    ReverseVectorIterator iterator(*this);
-    --data;
-    return iterator;
-  }
-
-  ReverseVectorIterator& operator--() noexcept {
-    ++data;
-    return *this;
-  }
-
-  ReverseVectorIterator operator--(int) noexcept {
-    ReverseVectorIterator iterator(*this);
-    ++data;
-    return iterator;
-  }
-
-  ReferenceType operator[](int index) { return *(data - index); }
-
-  PointerType operator->() const { return data; }
-
-  ReferenceType operator*() const { return *data; }
-
-  bool operator==(const ReverseVectorIterator& other) const {
-    return data == other.data;
-  }
-
-  bool operator!=(const ReverseVectorIterator& other) const {
-    return !(data == other.data);
-  }
-
-  operator ReverseVectorIterator<const ReverseVectorIterator>() const {
-    return ReverseVectorIterator<const ReverseVectorIterator>(data);
-  }
-};
+#include "reverseVectorIterator.hpp"
+#include "vectorIterator.hpp"
 
 template <typename T>
 class Vector {
@@ -154,12 +42,12 @@ class Vector {
   Vector(int size) noexcept;
   Vector(int size, const T&) noexcept;
   Vector(const std::vector<T>&) noexcept;
-  Vector(const initializer_list<T>&) noexcept;
+  Vector(const std::initializer_list<T>&) noexcept;
   Vector(const Vector<T>&) noexcept;
   Vector(Vector&&) noexcept;
   ~Vector() noexcept;
 
-  void Assign(const initializer_list<T>&);
+  void Assign(const std::initializer_list<T>&);
   void Assign(const std::vector<T>&);
   void Assign(int count, const T& value);
   void PushBack(const T&);
@@ -269,7 +157,7 @@ class Vector {
   }
 
   template <typename U>
-  friend ostream& operator<<(ostream& os, const Vector<U>& vector);
+  friend std::ostream& operator<<(std::ostream& os, const Vector<U>& vector);
 
   bool operator!=(const Vector<T>&) const;
   bool operator==(const Vector<T>&) const;
@@ -304,12 +192,12 @@ template <typename T>
 Vector<T>::Vector(const std::vector<T>& fillerVector) noexcept
     : size{(int)fillerVector.size()}, capacity{size}, data{new T[capacity]} {
   for (int i = 0; i < size; i++) {
-    data[i] = move(fillerVector[i]);
+    data[i] = std::move(fillerVector[i]);
   }
 }
 
 template <typename T>
-Vector<T>::Vector(const initializer_list<T>& initList) noexcept
+Vector<T>::Vector(const std::initializer_list<T>& initList) noexcept
     : size{static_cast<int>(initList.size())},
       capacity{size},
       data{new T[capacity]} {
@@ -531,16 +419,16 @@ const T* Vector<T>::Data() const {
 }
 
 template <typename T>
-void Vector<T>::Assign(const initializer_list<T>& initList) {
+void Vector<T>::Assign(const std::initializer_list<T>& initList) {
   for (const T& element : initList) {
-    PushBack(move(element));
+    PushBack(std::move(element));
   }
 }
 
 template <typename T>
 void Vector<T>::Assign(const std::vector<T>& list) {
   for (const T& element : list) {
-    PushBack(move(element));
+    PushBack(std::move(element));
   }
 }
 
@@ -548,7 +436,7 @@ template <typename T>
 void Vector<T>::Assign(int count, const T& value) {
   int counter = 0;
   while (counter < count) {
-    PushBack(move(value));
+    PushBack(std::move(value));
     counter++;
   }
 }
@@ -571,7 +459,7 @@ void Vector<T>::PushBack(T&& newData) {
     Resize(newCapacity);
   }
 
-  this->data[size] = move(newData);
+  this->data[size] = std::move(newData);
   this->size++;
 }
 
@@ -583,7 +471,7 @@ void Vector<T>::PushFront(const T& newData) {
   }
 
   for (int i = size; i >= 0; i--) {
-    data[i] = move(data[i - 1]);
+    data[i] = std::move(data[i - 1]);
   }
 
   data[0] = newData;
@@ -598,10 +486,10 @@ void Vector<T>::PushFront(T&& newData) {
   }
 
   for (int i = size; i >= 0; i--) {
-    data[i] = move(data[i - 1]);
+    data[i] = std::move(data[i - 1]);
   }
 
-  data[0] = move(newData);
+  data[0] = std::move(newData);
   this->size++;
 }
 
@@ -637,7 +525,7 @@ void Vector<T>::Insert(int index, T&& newData) {
     data[i + 1] = data[i];
   }
 
-  data[index] = move(newData);
+  data[index] = std::move(newData);
   this->size++;
 }
 
@@ -671,7 +559,7 @@ void Vector<T>::PushMiddle(T&& newData) {
     data[i + 1] = data[i];
   }
 
-  data[midpoint] = move(newData);
+  data[midpoint] = std::move(newData);
   this->size++;
 }
 
@@ -683,7 +571,7 @@ void Vector<T>::EmplaceBack(Args&&... args) {
     Resize(newCapacity);
   }
 
-  this->data[size] = T(forward<Args>(args)...);
+  this->data[size] = T(std::forward<Args>(args)...);
   this->size++;
 }
 
@@ -696,9 +584,9 @@ void Vector<T>::EmplaceFront(Args&&... args) {
   }
 
   for (int i = size; i >= 0; i--) {
-    data[i] = move(data[i - 1]);
+    data[i] = std::move(data[i - 1]);
   }
-  this->data[0] = T(forward<Args>(args)...);
+  this->data[0] = T(std::forward<Args>(args)...);
   this->size++;
 }
 
@@ -717,7 +605,7 @@ void Vector<T>::Emplace(int index, Args&&... args) {
     data[i + 1] = data[i];
   }
 
-  data[index] = T(forward<Args>(args)...);
+  data[index] = T(std::forward<Args>(args)...);
   this->size++;
 }
 
@@ -792,7 +680,7 @@ void Vector<T>::Resize(int desiredCapacity) {
     T* newData = new T[desiredCapacity];
 
     for (int i = 0; i < size; i++) {
-      newData[i] = move(data[i]);
+      newData[i] = std::move(data[i]);
     }
 
     delete[] data;
@@ -804,7 +692,7 @@ void Vector<T>::Resize(int desiredCapacity) {
     T* newData = new T[desiredCapacity];
 
     for (int i = 0; i < desiredCapacity; i++) {
-      newData[i] = move(data[i]);
+      newData[i] = std::move(data[i]);
     }
 
     delete[] data;
@@ -1008,7 +896,7 @@ template <typename T>
 void Vector<T>::ForEach(T (*function)(const T&, int)) {
   int index = 0;
   for (int i = 0; i < size; i++) {
-    data[i] = move(function(data[i], index));
+    data[i] = std::move(function(data[i], index));
     index++;
   }
 }
@@ -1124,9 +1012,9 @@ T* Vector<T>::FindLast(bool (*function)(const T&, int)) const {
 
 template <typename T>
 void Vector<T>::Swap(T* a, T* b) {
-  T temporary = move(*a);
-  *a = move(*b);
-  *b = move(temporary);
+  T temporary = std::move(*a);
+  *a = std::move(*b);
+  *b = std::move(temporary);
 }
 
 template <typename T>
@@ -1176,20 +1064,20 @@ void Vector<T>::Print() const {
     return;
   }
 
-  cout << "[";
+  std::cout << "[";
   for (int i = 0; i < size; i++) {
-    cout << data[i];
+    std::cout << data[i];
 
     if (i < (size - 1)) {
-      cout << ", ";
+      std::cout << ", ";
     }
   }
 
-  cout << "]" << endl;
+  std::cout << "]" << std::endl;
 }
 
 template <typename T>
-ostream& operator<<(ostream& os, const Vector<T>& vector) {
+std::ostream& operator<<(std::ostream& os, const Vector<T>& vector) {
   vector.Print();
   return os;
 }
