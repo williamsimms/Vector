@@ -586,6 +586,7 @@ void Vector<T>::EmplaceFront(Args&&... args) {
   for (int i = size; i >= 0; i--) {
     data[i] = std::move(data[i - 1]);
   }
+
   this->data[0] = T(std::forward<Args>(args)...);
   this->size++;
 }
